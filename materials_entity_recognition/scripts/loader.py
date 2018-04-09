@@ -137,11 +137,10 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
         # get dependent words
         depWords = get_key_words(str_words)
         for i in range(len(str_words)):
-            print(str_words[i], depWords[i])
             for tmp_key_word in depWords[i]:
                 if tmp_key_word in key_words_dict:
                     key_words[i][key_words_dict[tmp_key_word]] = 1 
-                    
+
     return {
         'str_words': str_words,
         'words': words,
