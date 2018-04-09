@@ -17,7 +17,10 @@ class MatIdentification():
 			self.model = Model(model_path = os.path.join(file_path, '..', 'models/matIdentification'))		
 		else:
 			self.model = Model(model_path = model_path)
+		if 'keyword_dim' not in self.model.parameters:
+			self.model.parameters['keyword_dim'] = 0
 		parameters = self.model.parameters
+		
 		word_to_id, char_to_id, tag_to_id = [
 		    {v: k for k, v in list(x.items())}
 		    for x in [self.model.id_to_word, self.model.id_to_char, self.model.id_to_tag]
@@ -92,12 +95,17 @@ class MatRecognition():
 	"""
 	Use LSTM for materials recognition
 	"""
-	def __init__(self, model_path = None, mat_identify_model_path = None):
+	def __init__(self, model_path = None, mat_identify_model_path = None, parse_dependency=False):
 		if model_path == None:
 			file_path = os.path.dirname(__file__)
-			self.model = Model(model_path = os.path.join(file_path, '..', 'models/matRecognition'))
+			if parse_dependency:
+				self.model = Model(model_path = os.path.join(file_path, '..', 'models/matRecognition2'))
+			else:	
+				self.model = Model(model_path = os.path.join(file_path, '..', 'models/matRecognition'))
 		else:
 			self.model = Model(model_path = model_path)
+		if 'keyword_dim' not in self.model.parameters:
+			self.model.parameters['keyword_dim'] = 0
 		if mat_identify_model_path == None:
 			file_path = os.path.dirname(__file__)
 			self.identify_model = MatIdentification(os.path.join(file_path, '..', 'models/matIdentification'))
@@ -127,8 +135,12 @@ class MatRecognition():
 		recognitionResult = {'precursors': [], 'targets': [], 'other_materials': []}
 		# Prepare input
 		words = [tmp_token['text'] for tmp_token in input_sent]
-		sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
+		if self.parameters['keyword_dim'] != 0:
+			sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
 									lower=self.parameters['lower'], use_key_word=True)
+		else:
+			sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
+									lower=self.parameters['lower'], use_key_word=False)
 		input = create_input(sentence, self.parameters, False)
 		# Prediction
 		if self.parameters['crf']:

@@ -13,11 +13,12 @@ if __name__ == "__main__":
           packages=find_packages(),
           install_requires=[
           	'chemdataextractor',
-			'theano',
-			'spacy',
-			'unidecode',
-			'regex',
-			'pubchempy',
-			],
+      			'theano',
+      			'spacy',
+      			'unidecode',
+      			'regex',
+      			'pubchempy',
+            "nltk",
+      			],
           zip_safe=False)
 
