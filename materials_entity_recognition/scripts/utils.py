@@ -192,6 +192,8 @@ def create_input(data, parameters, add_label, singletons=None):
         input.append(char_pos)
     if parameters['cap_dim']:
         input.append(caps)
+    if 'keyword_dim' in parameters and parameters['keyword_dim']:
+        input.append(data['key_words'])
     if add_label:
         input.append(data['tags'])
     return input

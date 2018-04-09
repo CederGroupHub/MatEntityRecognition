@@ -128,7 +128,7 @@ class MatRecognition():
 		# Prepare input
 		words = [tmp_token['text'] for tmp_token in input_sent]
 		sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
-									lower=self.parameters['lower'])
+									lower=self.parameters['lower'], use_key_word=True)
 		input = create_input(sentence, self.parameters, False)
 		# Prediction
 		if self.parameters['crf']:

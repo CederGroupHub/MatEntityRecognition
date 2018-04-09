@@ -4,6 +4,11 @@ import codecs
 
 from .utils import create_dico, create_mapping, zero_digits
 from .utils import iob2, iob_iobes
+from .dependency_func import get_key_words
+
+# vb multi IN
+key_words_list = ['r_prepared', 'r_used', 'l_using', 'r_synthesized', 'l_prepared from', 'l_prepared by', 'l_sintered in', 'l_calcined in', 'r_added', 'r_weighed', 'r_mixed', 'l_prepared', 'r_dissolved', 'l_synthesized from', 'l_synthesized by', 'l_weighed', 'l_dissolved in', 'l_mixed in', 'l_heated in', 'l_milled']
+key_words_dict = {w: i for (i, w) in enumerate(key_words_list)}
 
 
 def load_sentences(path, lower, zeros):
@@ -110,113 +115,39 @@ def cap_feature(s):
         return 3
 
 
-def prepare_sentence(str_words, word_to_id, char_to_id, lower=False):
+def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False):
     """
     Prepare a sentence for evaluation.
     """
     def f(x): return x.lower() if lower else x
-    # updated code
-    # assing label <MAT>
     words = []
     for w in str_words:
-        # code need to be completed according to the input format
-        # if w == 'mat':
-        #     print('Error! Incompleted code!')
-        #     tmp_word = '<MAT>'
-        # el
         if f(w) in word_to_id:
             tmp_word = f(w)
         else:
             tmp_word = '<UNK>'
         words.append(word_to_id[tmp_word])
-    # original code
-    # words = [word_to_id[f(w) if f(w) in word_to_id else '<UNK>']
-             # for w in str_words]
     chars = [[char_to_id[c] for c in w if c in char_to_id]
              for w in str_words]
     caps = [cap_feature(w) for w in str_words]
+
+    # modified appended
+    key_words = [[0]*len(key_words_list) for w in str_words]
+    if use_key_word:
+        # get dependent words
+        depWords = get_key_words(str_words)
+        for i in range(len(str_words)):
+            print(str_words[i], depWords[i])
+            for tmp_key_word in depWords[i]:
+                if tmp_key_word in key_words_dict:
+                    key_words[i][key_words_dict[tmp_key_word]] = 1 
+                    
     return {
         'str_words': str_words,
         'words': words,
         'chars': chars,
-        'caps': caps
+        'caps': caps,
+        'key_words': key_words,
     }
 
 
-def prepare_dataset(sentences, word_to_id, char_to_id, tag_to_id, lower=False):
-    """
-    Prepare the dataset. Return a list of lists of dictionaries containing:
-        - word indexes
-        - word char indexes
-        - tag indexes
-    """
-    def f(x): return x.lower() if lower else x
-    data = []
-    for s in sentences:
-        str_words = [w[0] for w in s]
-        # updated code
-        # assing label <MAT>
-        words = []
-        for tmp_index, w in enumerate(str_words):
-            # if s[tmp_index][1].find('Mat') > -1:
-            #     # print(s[tmp_index])
-            #     tmp_word = '<MAT>'
-            # el
-            if f(w) in word_to_id:
-                tmp_word = f(w)
-            else:
-                tmp_word = '<UNK>'
-            words.append(word_to_id[tmp_word])
-        # # original code        
-        # words = [word_to_id[f(w) if f(w) in word_to_id else '<UNK>']
-        #          for w in str_words]
-        # Skip characters that are not in the training set
-        chars = [[char_to_id[c] for c in w if c in char_to_id]
-                 for w in str_words]
-        caps = [cap_feature(w) for w in str_words]
-        tags = [tag_to_id[w[-1]] for w in s]
-        data.append({
-            'str_words': str_words,
-            'words': words,
-            'chars': chars,
-            'caps': caps,
-            'tags': tags,
-        })
-    return data
-
-
-def augment_with_pretrained(dictionary, ext_emb_path, words):
-    """
-    Augment the dictionary with words that have a pretrained embedding.
-    If `words` is None, we add every word that has a pretrained embedding
-    to the dictionary, otherwise, we only add the words that are given by
-    `words` (typically the words in the development and test sets.)
-    """
-    print('Loading pretrained embeddings from %s...' % ext_emb_path)
-    assert os.path.isfile(ext_emb_path)
-
-    # Load pretrained embeddings from file
-    pretrained = set([
-        line.rstrip().split()[0].strip()
-        for line in codecs.open(ext_emb_path, 'r', 'utf-8')
-        if len(ext_emb_path) > 0
-    ])
-
-    # We either add every word in the pretrained file,
-    # or only words given in the `words` list to which
-    # we can assign a pretrained embedding
-    if words is None:
-        for word in pretrained:
-            if word not in dictionary:
-                dictionary[word] = 0
-    else:
-        for word in words:
-            if any(x in pretrained for x in [
-                word,
-                word.lower(),
-                re.sub('\d', '0', word.lower())
-            ]) and word not in dictionary:
-                dictionary[word] = 0
-
-    word_to_id, id_to_word = create_mapping(dictionary)
-    return dictionary, word_to_id, id_to_word
