@@ -2,6 +2,12 @@
 
 Extract materials from a paragraph, and recognize the tartes and precursors in those materials  
 
+Install:  
+
+	git clone git@github.com:CederGroupHub/MatEntityRecognition.git 
+	cd MatEntityRecognition
+	pip install -e .
+
 Use:
 
 	from materials_entity_recognition import MatRecognition   
