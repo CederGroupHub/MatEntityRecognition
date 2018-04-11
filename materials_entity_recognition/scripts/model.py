@@ -12,7 +12,12 @@ from .utils import shared, set_values, get_name
 from .nn import HiddenLayer, EmbeddingLayer, DropoutLayer, LSTM, forward
 from .optimization import Optimization
 
+__author__ = 'Tanjin He'
+__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
+
 nlp = spacy.load('en')
+
 
 class Model(object):
     """

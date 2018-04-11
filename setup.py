@@ -12,13 +12,15 @@ if __name__ == "__main__":
           license="MIT License",
           packages=find_packages(),
           install_requires=[
-          	'chemdataextractor',
-      			'theano',
-      			'spacy',
-      			'unidecode',
-      			'regex',
-      			'pubchempy',
-            "nltk",
-      			],
+              'chemdataextractor',
+              'theano',
+              'spacy',
+              'unidecode',
+              'regex',
+              'pubchempy',
+              "nltk",
+              'numpy',
+              'scipy'
+          ],
           zip_safe=False)
 

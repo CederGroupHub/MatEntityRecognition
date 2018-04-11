@@ -2,6 +2,10 @@ import theano
 import theano.tensor as T
 from .utils import shared
 
+__author__ = 'Tanjin He'
+__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
+
 
 class HiddenLayer(object):
     """

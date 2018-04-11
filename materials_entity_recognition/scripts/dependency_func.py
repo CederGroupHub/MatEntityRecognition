@@ -5,6 +5,10 @@ from unidecode import unidecode
 import nltk
 from nltk.stem import WordNetLemmatizer
 
+__author__ = 'Tanjin He'
+__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
+
 # common variables
 file_path = os.path.dirname(__file__)
 stanford_parser_folder = os.path.join(file_path, '..', 'models/stanfordParser')

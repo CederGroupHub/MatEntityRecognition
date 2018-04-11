@@ -4,6 +4,10 @@ import codecs
 import numpy as np
 import theano
 
+__author__ = 'Tanjin He'
+__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
+
 
 def get_name(parameters):
     """

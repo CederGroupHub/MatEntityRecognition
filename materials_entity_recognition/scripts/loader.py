@@ -6,6 +6,10 @@ from .utils import create_dico, create_mapping, zero_digits
 from .utils import iob2, iob_iobes
 from .dependency_func import get_key_words
 
+__author__ = 'Tanjin He'
+__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
+
 # vb multi IN
 key_words_list = ['r_prepared', 'r_used', 'l_using', 'r_synthesized', 'l_prepared from', 'l_prepared by', 'l_sintered in', 'l_calcined in', 'r_added', 'r_weighed', 'r_mixed', 'l_prepared', 'r_dissolved', 'l_synthesized from', 'l_synthesized by', 'l_weighed', 'l_dissolved in', 'l_mixed in', 'l_heated in', 'l_milled']
 key_words_dict = {w: i for (i, w) in enumerate(key_words_list)}
