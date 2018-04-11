@@ -17,11 +17,10 @@ class MatIdentification(object):
     """
 
     def __init__(self, model_path=None):
-        if model_path == None:
+        if model_path is None:
             file_path = os.path.dirname(__file__)
-            self.model = Model(model_path=os.path.join(file_path, '..', 'models/matIdentification'))
-        else:
-            self.model = Model(model_path=model_path)
+            model_path = os.path.join(file_path, '..', 'models/matIdentification')
+        self.model = Model(model_path=model_path)
         if 'keyword_dim' not in self.model.parameters:
             self.model.parameters['keyword_dim'] = 0
         parameters = self.model.parameters

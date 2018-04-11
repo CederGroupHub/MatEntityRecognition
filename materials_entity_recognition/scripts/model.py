@@ -23,40 +23,22 @@ class Model(object):
     """
     Network architecture.
     """
-    def __init__(self, parameters=None, models_path=None, model_path=None):
+
+    def __init__(self, model_path=None):
         """
         Initialize the model. We either provide the parameters and a path where
         we store the models, or the location of a trained model.
+
+        :param model_path: File path to reload the model
         """
-        if model_path is None:
-            assert parameters and models_path
-            # Create a name based on the parameters
-            self.parameters = parameters
-            self.name = get_name(parameters)
-            # Model location
-            # original
-            # model_path = os.path.join(models_path, self.name)
-            # modified
-            model_path = os.path.join(models_path, self.name[0:20])
-            self.model_path = model_path
-            self.parameters_path = os.path.join(model_path, 'parameters.pkl')
-            self.mappings_path = os.path.join(model_path, 'mappings.pkl')
-            # Create directory for the model if it does not exist
-            if not os.path.exists(self.model_path):
-                os.makedirs(self.model_path)
-            # Save the parameters to disk
-            with open(self.parameters_path, 'wb') as f:
-                pickle.dump(parameters, f)
-        else:
-            assert parameters is None and models_path is None
-            # Model location
-            self.model_path = model_path
-            self.parameters_path = os.path.join(model_path, 'parameters.pkl')
-            self.mappings_path = os.path.join(model_path, 'mappings.pkl')
-            # Load the parameters and the mappings from disk
-            with open(self.parameters_path, 'rb') as f:
-                self.parameters = pickle.load(f)
-            self.reload_mappings()
+        # Model location
+        self.model_path = model_path
+        self.parameters_path = os.path.join(model_path, 'parameters.pkl')
+        self.mappings_path = os.path.join(model_path, 'mappings.pkl')
+        # Load the parameters and the mappings from disk
+        with open(self.parameters_path, 'rb') as f:
+            self.parameters = pickle.load(f)
+        self.reload_mappings()
         self.components = {}
 
     def save_mappings(self, id_to_word, id_to_char, id_to_tag):
