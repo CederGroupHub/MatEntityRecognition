@@ -4,9 +4,12 @@ Extract materials from a paragraph, and recognize the tartes and precursors in t
 
 Install:  
 
-	git clone git@github.com:CederGroupHub/MatEntityRecognition.git 
-	cd MatEntityRecognition
-	pip install -e .
+	If Git Large File Storage (lfs) is not installed on your computer, please install it fistly using
+		git lfs install
+	Then
+		git clone git@github.com:CederGroupHub/MatEntityRecognition.git 
+		cd MatEntityRecognition
+		pip install -e .
 
 Use:
 
