@@ -19,6 +19,9 @@ __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 nlp = spacy.load('en')
 
 
+# TODO: Add citation for the used repo
+
+
 class Model(object):
     """
     Network architecture.
@@ -38,7 +41,13 @@ class Model(object):
         # Load the parameters and the mappings from disk
         with open(self.parameters_path, 'rb') as f:
             self.parameters = pickle.load(f)
-        self.reload_mappings()
+
+        with open(self.mappings_path, 'rb') as f:
+            mappings = pickle.load(f)
+        self.id_to_word = mappings['id_to_word']
+        self.id_to_char = mappings['id_to_char']
+        self.id_to_tag = mappings['id_to_tag']
+
         self.components = {}
 
     def save_mappings(self, id_to_word, id_to_char, id_to_tag):
@@ -55,16 +64,6 @@ class Model(object):
                 'id_to_tag': self.id_to_tag,
             }
             pickle.dump(mappings, f)
-
-    def reload_mappings(self):
-        """
-        Load mappings from disk.
-        """
-        with open(self.mappings_path, 'rb') as f:
-            mappings = pickle.load(f)
-        self.id_to_word = mappings['id_to_word']
-        self.id_to_char = mappings['id_to_char']
-        self.id_to_tag = mappings['id_to_tag']
 
     def add_component(self, param):
         """

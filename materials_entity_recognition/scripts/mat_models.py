@@ -16,38 +16,38 @@ class MatIdentification(object):
     Use LSTM for materials identification
     """
 
-    def __init__(self, model_path=None):
-        if model_path is None:
+    def __init__(self, model=None):
+        """
+        :param model: A model.Model object, if None input, default initialize.
+        """
+        if model is None:
             file_path = os.path.dirname(__file__)
             model_path = os.path.join(file_path, '..', 'models/matIdentification')
-        self.model = Model(model_path=model_path)
-        if 'keyword_dim' not in self.model.parameters:
-            self.model.parameters['keyword_dim'] = 0
-        parameters = self.model.parameters
+            model = Model(model_path=model_path)
+        self.model = model
+        self.parameters = self.model.parameters
+        if 'keyword_dim' not in self.parameters:
+            self.parameters['keyword_dim'] = 0
 
-        word_to_id, char_to_id, tag_to_id = [
+        self.word_to_id, self.char_to_id, self.tag_to_id = [
             {v: k for k, v in list(x.items())}
             for x in [self.model.id_to_word, self.model.id_to_char, self.model.id_to_tag]
         ]
-        self.parameters = parameters
-        self.word_to_id = word_to_id
-        self.char_to_id = char_to_id
-        self.tag_to_id = tag_to_id
         _, f_eval = self.model.build(training=False, **self.parameters)
         self.f_eval = f_eval
         self.model.reload()
 
     def mat_identify_sent(self, input_sent):
         """
-		Identify materials in a sentence, which is a list of tokens.
-		Input: list of tokens representing a sentence 
-		Output: list of materials from LSTM
-		"""
+        Identify materials in a sentence, which is a list of tokens.
+        :param input_sent: list of tokens representing a sentence
+        :return: list of materials from LSTM
+        """
         # goal
         materials = []
         # Prepare input
         words = [tmp_token['text'] for tmp_token in input_sent]
-        sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
+        sentence = prepare_sentence(words, self.word_to_id, self.char_to_id,
                                     lower=self.parameters['lower'])
         input = create_input(sentence, self.parameters, False)
         # Prediction

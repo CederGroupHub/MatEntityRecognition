@@ -1,5 +1,3 @@
-import os
-import re
 import codecs
 
 from .utils import create_dico, create_mapping, zero_digits
