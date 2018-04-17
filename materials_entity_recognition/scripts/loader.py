@@ -5,8 +5,11 @@ from .utils import iob2, iob_iobes
 from .dependency_func import get_key_words
 
 __author__ = 'Tanjin He'
-__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
+
+
+# Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
 
 # vb multi IN
 key_words_list = ['r_prepared', 'r_used', 'l_using', 'r_synthesized', 'l_prepared from', 'l_prepared by', 'l_sintered in', 'l_calcined in', 'r_added', 'r_weighed', 'r_mixed', 'l_prepared', 'r_dissolved', 'l_synthesized from', 'l_synthesized by', 'l_weighed', 'l_dissolved in', 'l_mixed in', 'l_heated in', 'l_milled']
@@ -17,6 +20,10 @@ def load_sentences(path, lower, zeros):
     """
     Load sentences. A line must contain at least a word and its tag.
     Sentences are separated by empty lines.
+
+    :param lower: use lower case or not
+    :param zeros: convert digit numbers to zeros or not
+    :return sentences: list of sentence
     """
     sentences = []
     sentence = []
@@ -41,6 +48,9 @@ def update_tag_scheme(sentences, tag_scheme):
     """
     Check and update sentences tagging scheme to IOB2.
     Only IOB1 and IOB2 schemes are accepted.
+
+    :param sentences: list of sentence
+    :param tag_scheme: iob or iobes
     """
     for i, s in enumerate(sentences):
         tags = [w[-1] for w in s]
@@ -64,6 +74,12 @@ def update_tag_scheme(sentences, tag_scheme):
 def word_mapping(sentences, lower):
     """
     Create a dictionary and a mapping of words, sorted by frequency.
+
+    :param sentences: list of sentence
+    :param lower: use lower case or not
+    :return dico: vocabulary of all words
+    :return word_to_id: mapping from a word to a number (id)
+    :return id_to_word: mapping from a number (id) to a word
     """
     words = [[x[0].lower() if lower else x[0] for x in s] for s in sentences]
     dico = create_dico(words)
@@ -79,6 +95,11 @@ def word_mapping(sentences, lower):
 def char_mapping(sentences):
     """
     Create a dictionary and mapping of characters, sorted by frequency.
+    
+    :param sentences: list of sentence
+    :return dico: vocabulary of all characters
+    :return char_to_id: mapping from a character to a number (id)
+    :return id_to_char: mapping from a number (id) to a character
     """
     chars = ["".join([w[0] for w in s]) for s in sentences]
     dico = create_dico(chars)
@@ -90,6 +111,11 @@ def char_mapping(sentences):
 def tag_mapping(sentences):
     """
     Create a dictionary and a mapping of tags, sorted by frequency.
+    
+    :param sentences: list of sentence
+    :return dico: vocabulary of all tags
+    :return tag_to_id: mapping from a tag to a number (id)
+    :return id_to_tag: mapping from a number (id) to a tag
     """
     tags = [[word[-1] for word in s] for s in sentences]
     dico = create_dico(tags)
@@ -106,6 +132,9 @@ def cap_feature(s):
     1 = all caps
     2 = first letter caps
     3 = one capital (not first letter)
+
+    :param s: text
+    :return captial characcter feature
     """
     if s.lower() == s:
         return 0
@@ -120,6 +149,13 @@ def cap_feature(s):
 def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False):
     """
     Prepare a sentence for evaluation.
+
+    :param str_words: list of words
+    :param word_to_id: mapping from a word to a number (id)
+    :param char_to_id: mapping from a character to a number (id)
+    :param lower: use lower case or not
+    :param use_key_word: use key words or not
+    :return dict corresponding to input features
     """
     def f(x): return x.lower() if lower else x
     words = []

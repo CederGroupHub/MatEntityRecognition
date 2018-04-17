@@ -7,7 +7,7 @@ from .loader import prepare_sentence
 from .utils import create_input, iobes_iob
 
 __author__ = 'Tanjin He'
-__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 

@@ -13,14 +13,13 @@ from .nn import HiddenLayer, EmbeddingLayer, DropoutLayer, LSTM, forward
 from .optimization import Optimization
 
 __author__ = 'Tanjin He'
-__maintainer__ = 'Tanjing He, Ziqin (Shaun) Rong'
+__maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 nlp = spacy.load('en')
 
 
-# TODO: Add citation for the used repo
-
+# Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
 
 class Model(object):
     """
@@ -53,6 +52,10 @@ class Model(object):
     def save_mappings(self, id_to_word, id_to_char, id_to_tag):
         """
         We need to save the mappings if we want to use the model later.
+
+        :param id_to_word: mapping from a number (id) to a word in text
+        :param id_to_char: mapping from a number (id) to a character in a word
+        :param id_to_tag: mapping from a number (id) to a tag of word
         """
         self.id_to_word = id_to_word
         self.id_to_char = id_to_char
@@ -68,6 +71,8 @@ class Model(object):
     def add_component(self, param):
         """
         Add a new parameter to the network.
+
+        :param param: a dict of parameter names and parameter values
         """
         if param.name in self.components:
             raise Exception('The network already has a parameter "%s"!'
@@ -117,6 +122,23 @@ class Model(object):
               ):
         """
         Build the network.
+
+        :param dropout: droupout rate
+        :param char_dim: dimension of character feature
+        :param char_lstm_dim: dimension of hidden layer for lstm dealing with character feature
+        :param char_bidirect: use bidirectional lstm for character feature or not
+        :param word_dim: dimension of word feature
+        :param word_lstm_dim: dimension of hidden layer for lstm dealing with word embedding
+        :param word_bidirect: use bidirectional lstm for word recognition or not
+        :param lr_method: learning method
+        :param pre_emb: pretrained embedding
+        :param crf: use crf or not
+        :param cap_dim: use capital character feature or not
+        :param keyword_dim: dimension of keyword feature
+        :param training: training or not
+        :param kwargs: customized parameters of model
+        :return f_train: training function
+        :return f_eval: evaluation function
         """
         # Training parameters
         n_words = len(self.id_to_word)
