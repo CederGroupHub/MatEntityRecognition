@@ -21,14 +21,16 @@ dep_parser = stanford.StanfordDependencyParser(model_path=stanford_model_path)
 tabu_IN_words = set(['of'])
 nltk_lemmatizer = WordNetLemmatizer()
 
-def get_min_parse(parsed_tree, leafIndex):
+def get_min_parse(parsed_tree, leaf_index):
     """
     Get the minimum required component of a parsed tree for a certain leaf word.
-    input: a parsed tree, the index of the leaf word
-    output: list of words or (sub-)tree objects forming a compact sentence about the leaf word 
     E.g. In the first step MAT ( MAT ) was hydrolyzed under constant stirring with a mixed solution of MAT and MAT and using MAT as catalyst ; molar ratio was 1 : 4 : 10 : 05.
     When inspecting the firt MAT word, the sentence would be converted to: 
     PP MAT PRN was hydrolyzed PP; S.
+
+    :param parsed_tree: a parsed tree by Stanford Parser
+    :param leaf_index: the index of the leaf word
+    :return minParse: list of words or (sub-)tree objects forming a compact sentence about the leaf word 
     """    
     # goal
     minParse = []
@@ -36,7 +38,7 @@ def get_min_parse(parsed_tree, leafIndex):
     pos_index_dict = {str(pos): i for (i, pos) in enumerate(all_leaf_pos)}
     # left side
     # tranverse from bottom to up, and expanding VP node if still in local sentence (no S label met)
-    leaf_pos = parsed_tree.leaf_treeposition(leafIndex)
+    leaf_pos = parsed_tree.leaf_treeposition(leaf_index)
     position = list(leaf_pos)
     minParse.append((parsed_tree[position], pos_index_dict[str(leaf_pos)])) 
     last_position = position.pop()
@@ -99,10 +101,14 @@ def find_phrase(dep_tree, start_address, end_address, parsed_tree, min_words = N
     """
     Find the key words/phrases corresponding to the start node that has a direct or indirect dependency relation with the end note.
     It is VB or association of VB and IN here.
-    input: dependency tree, address of start node, address of end node, parsed tree, words in the compact sentence got from get_min_parse, 
-            the direction of searching IN (from start node to end node or from end node to start node)
-    output: a string which is a word or a phrase
-    start_address is the root, end_address is the node corresponding to MAT
+
+    :param dep_tree: a dependency tree from Stanford Dependency Parser
+    :param start_address: address of start node, the node corresponding to the key word (VB)
+    :param end_address: address of end node, the node corresponding to MAT
+    :param parsed_tree: a parsed tree from Stanford Parser
+    :param min_words: words in the compact sentence got from get_min_parse() 
+    :param from_end: the direction of searching IN (from start node to end node or from end node to start node)
+    :return phrase: a string which is a word or a phrase
     """    
 
     # goal
@@ -171,8 +177,9 @@ def find_phrase(dep_tree, start_address, end_address, parsed_tree, min_words = N
 def word_regulate(word):
     """
     regulate a word to be able to be dealed with by stanford parser 
-    input: str
-    output: str
+    
+    :param word: word
+    :return word_normal: regulated word with special characters replaced
     """
     word_normal = unidecode(word) 
     substitutionTable = {
@@ -188,8 +195,9 @@ def word_regulate(word):
 def sent_regulate(sentence):
     """
     regulate words in a sentence to be able to be dealed with by stanford parser 
-    input: list of words
-    output: list of regulated words
+    
+    :param sentence: list of words
+    :param sent_normal: list of regulated words
     """
     sent_normal = []
     i = 0
@@ -218,8 +226,9 @@ def sent_regulate(sentence):
 def get_key_words(str_words):
     """
     Get the key words that have a direct or indirect dependency relation with a material word.
-    Input: list of words, which froms a sentence
-    Output: list of key words, which are usually VB or VB + IN in the sentence
+    
+    :param str_words: list of words, which froms a sentence
+    :return key_words: list of key words, which are usually VB or VB + IN in the sentence
     """
     # goal
     key_words = []

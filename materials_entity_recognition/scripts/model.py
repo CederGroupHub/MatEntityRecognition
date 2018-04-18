@@ -16,10 +16,9 @@ __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
-nlp = spacy.load('en')
-
-
 # Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
+
+nlp = spacy.load('en')
 
 class Model(object):
     """

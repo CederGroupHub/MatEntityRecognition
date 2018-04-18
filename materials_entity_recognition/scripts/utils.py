@@ -8,10 +8,14 @@ __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
+# Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
 
 def get_name(parameters):
     """
     Generate a model name from its parameters.
+
+    :param parameters
+    :return name
     """
     l = []
     for k, v in list(parameters.items()):
@@ -27,6 +31,10 @@ def set_values(name, param, pretrained):
     """
     Initialize a network parameter with pretrained values.
     We check that sizes are compatible.
+
+    :param name: name of network
+    :param param: parameters
+    :param pretrained: pretrained values 
     """
     param_value = param.get_value()
     if pretrained.size != param_value.size:
@@ -42,6 +50,10 @@ def set_values(name, param, pretrained):
 def shared(shape, name):
     """
     Create a shared object of a numpy array.
+
+    :param shape: shape of array
+    :param name: name of array
+    :return shared object of a numpy array.
     """
     if len(shape) == 1:
         value = np.zeros(shape)  # bias are initialized with zeros
@@ -54,6 +66,9 @@ def shared(shape, name):
 def create_dico(item_list):
     """
     Create a dictionary of items from a list of list of items.
+
+    :param item_list: a list of list of items.
+    :return dico: dictionary of items
     """
     assert type(item_list) is list
     dico = {}
@@ -70,6 +85,10 @@ def create_mapping(dico):
     """
     Create a mapping (item to ID / ID to item) from a dictionary.
     Items are ordered by decreasing frequency.
+
+    :param dico: dictionary of items
+    :return item_to_id: mapping from an item to a number (id) 
+    :return item_to_id: mapping from a number (id) to an item
     """
     sorted_items = sorted(list(dico.items()), key=lambda x: (-x[1], x[0]))
     id_to_item = {i: v[0] for i, v in enumerate(sorted_items)}
@@ -80,6 +99,9 @@ def create_mapping(dico):
 def zero_digits(s):
     """
     Replace every digit in a string by a zero.
+
+    :param s: a word
+    :return modified word where digit numbers are replaced by zero
     """
     return re.sub('\d', '0', s)
 
@@ -88,6 +110,9 @@ def iob2(tags):
     """
     Check that tags have a valid IOB format.
     Tags in IOB1 format are converted to IOB2.
+
+    :param tags
+    :return True or False
     """
     for i, tag in enumerate(tags):
         if tag == 'O':
@@ -109,6 +134,9 @@ def iob2(tags):
 def iob_iobes(tags):
     """
     IOB -> IOBES
+
+    :param tags: iob tags
+    :return new_tags: iobes tags
     """
     new_tags = []
     for i, tag in enumerate(tags):
@@ -134,6 +162,9 @@ def iob_iobes(tags):
 def iobes_iob(tags):
     """
     IOBES -> IOB
+
+    :param tags: iobes tags
+    :return new_tags: iob tags
     """
     new_tags = []
     for i, tag in enumerate(tags):
@@ -151,16 +182,31 @@ def iobes_iob(tags):
             raise Exception('Invalid format!')
     return new_tags
 
+def insert_singletons(words, singletons, p=0.5):
+    """
+    Replace singletons by the unknown word with a probability p.
+
+    :param words: list of word ids
+    :param singletons: set of words only appear one time in training set
+    :param p: probability for replacement
+    :return new_words: modified list of word ids 
+    """
+    new_words = []
+    for word in words:
+        if word in singletons and np.random.uniform() < p:
+            new_words.append(0)
+        else:
+            new_words.append(word)
+    return new_words
 
 def pad_word_chars(words):
     """
     Pad the characters of the words in a sentence.
-    Input:
-        - list of lists of ints (list of words, a word being a list of char indexes)
-    Output:
-        - padded list of lists of ints
-        - padded list of lists of ints (where chars are reversed)
-        - list of ints corresponding to the index of the last character of each word
+    
+    :param words: list of lists of ints (list of words, a word being a list of char indexes)
+    :return char_for: padded list of lists of ints in the forward direction
+    :return char_rev: padded list of lists of ints in the reversed direction
+    :return char_pos: list of ints corresponding to the index of the last character of each word
     """
     max_length = max([len(word) for word in words])
     char_for = []
@@ -178,6 +224,12 @@ def create_input(data, parameters, add_label, singletons=None):
     """
     Take sentence data and return an input for
     the training or the evaluation function.
+
+    :param data: a dict as sentence data
+    :param parameters: parameters of model
+    :param add_label: add tags for words or not
+    :param singletons: set of words only appear one time in training set
+    :return input: all input features correponding to a sentence 
     """
     words = data['words']
     chars = data['chars']

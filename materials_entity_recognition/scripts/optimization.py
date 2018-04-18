@@ -6,21 +6,28 @@ __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
+# Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
+
 floatX = theano.config.floatX
 device = theano.config.device
-
 
 class Optimization:
 
     def __init__(self, clip=None):
         """
         Initialization
+        
+        :param clip: boundary of gradient clipping
         """
         self.clip = clip
 
     def get_gradients(self, cost, params):
         """
         Compute the gradients, and clip them if required.
+
+        :param cost: cost function
+        :param params: parameters
+        :return gradients
         """
         if self.clip is None:
             return T.grad(cost, params)
@@ -34,6 +41,13 @@ class Optimization:
     def get_updates(self, method, cost, params, *args, **kwargs):
         """
         Compute the updates for different optimizers.
+
+        :param method: method used to update
+        :param cost: cost function
+        :param params: parameters
+        :param args: parameters
+        :param kwargs: parameters 
+        :return updates
         """
         if method == 'sgd':
             updates = self.sgd(cost, params, **kwargs)
@@ -54,6 +68,11 @@ class Optimization:
     def sgd(self, cost, params, lr=0.01):
         """
         Stochatic gradient descent.
+
+        :param cost: cost function
+        :param params: parameters
+        :param lr: learning rate
+        :return updates
         """
         lr = theano.shared(np.float32(lr).astype(floatX))
 
@@ -68,6 +87,12 @@ class Optimization:
     def sgdmomentum(self, cost, params, lr=0.01, momentum=0.9):
         """
         Stochatic gradient descent with momentum. Momentum has to be in [0, 1)
+
+        :param cost: cost function
+        :param params: parameters
+        :param lr: learning rate
+        :param momentum
+        :return updates
         """
         # Check that the momentum is a correct value
         assert 0 <= momentum < 1
@@ -88,6 +113,12 @@ class Optimization:
     def adagrad(self, cost, params, lr=1.0, epsilon=1e-6):
         """
         Adagrad. Based on http://www.ark.cs.cmu.edu/cdyer/adagrad.pdf
+
+        :param cost: cost function
+        :param params: parameters
+        :param lr: learning rate
+        :param epsilon
+        :return updates
         """
         lr = theano.shared(np.float32(lr).astype(floatX))
         epsilon = theano.shared(np.float32(epsilon).astype(floatX))
@@ -106,6 +137,12 @@ class Optimization:
         """
         Adadelta. Based on:
         http://www.matthewzeiler.com/pubs/googleTR2012/googleTR2012.pdf
+
+        :param cost: cost function
+        :param params: parameters
+        :param rho
+        :param epsilon
+        :return updates
         """
         rho = theano.shared(np.float32(rho).astype(floatX))
         epsilon = theano.shared(np.float32(epsilon).astype(floatX))
@@ -127,6 +164,14 @@ class Optimization:
     def adam(self, cost, params, lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
         """
         Adam. Based on http://arxiv.org/pdf/1412.6980v4.pdf
+
+        :param cost: cost function
+        :param params: parameters
+        :param lr: learning rate
+        :param beta1
+        :param beta2
+        :param epsilon
+        :return updates
         """
         updates = []
         gradients = self.get_gradients(cost, params)
@@ -154,6 +199,13 @@ class Optimization:
     def rmsprop(self, cost, params, lr=0.001, rho=0.9, eps=1e-6):
         """
         RMSProp.
+
+        :param cost: cost function
+        :param params: parameters
+        :param lr: learning rate
+        :param rho
+        :param eps: epsilon
+        :return updates
         """
         lr = theano.shared(np.float32(lr).astype(floatX))
 

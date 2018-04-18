@@ -8,7 +8,6 @@ __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
-
 # Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
 
 # vb multi IN
@@ -77,7 +76,7 @@ def word_mapping(sentences, lower):
 
     :param sentences: list of sentence
     :param lower: use lower case or not
-    :return dico: vocabulary of all words
+    :return dico: dictionary of all words
     :return word_to_id: mapping from a word to a number (id)
     :return id_to_word: mapping from a number (id) to a word
     """
@@ -97,7 +96,7 @@ def char_mapping(sentences):
     Create a dictionary and mapping of characters, sorted by frequency.
     
     :param sentences: list of sentence
-    :return dico: vocabulary of all characters
+    :return dico: dictionary of all characters
     :return char_to_id: mapping from a character to a number (id)
     :return id_to_char: mapping from a number (id) to a character
     """
@@ -113,7 +112,7 @@ def tag_mapping(sentences):
     Create a dictionary and a mapping of tags, sorted by frequency.
     
     :param sentences: list of sentence
-    :return dico: vocabulary of all tags
+    :return dico: dictionary of all tags
     :return tag_to_id: mapping from a tag to a number (id)
     :return id_to_tag: mapping from a number (id) to a tag
     """

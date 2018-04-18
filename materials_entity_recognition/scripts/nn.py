@@ -6,15 +6,22 @@ __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
+# Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
 
 class HiddenLayer(object):
     """
-    Hidden layer with or without bias.
-    Input: tensor of dimension (dims*, input_dim)
-    Output: tensor of dimension (dims*, output_dim)
+    Hidden layer with or without bias
     """
+
     def __init__(self, input_dim, output_dim, bias=True, activation='sigmoid',
                  name='hidden_layer'):
+        """
+        :param input_dim: input dimension
+        :param output_dim: output dimension
+        :param bias: use bias or not
+        :param activation: activation function
+        :param name: name of hidden layer 
+        """
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.bias = bias
@@ -44,6 +51,9 @@ class HiddenLayer(object):
         """
         The input has to be a tensor with the right
         most dimension equal to input_dim.
+
+        :param input: tensor of dimension (dims*, input_dim)
+        :return output: tensor of dimension (dims*, output_dim)
         """
         self.input = input
         self.linear_output = T.dot(self.input, self.weights)
@@ -59,14 +69,13 @@ class HiddenLayer(object):
 class EmbeddingLayer(object):
     """
     Embedding layer: word embeddings representations
-    Input: tensor of dimension (dim*) with values in range(0, input_dim)
-    Output: tensor of dimension (dim*, output_dim)
     """
 
     def __init__(self, input_dim, output_dim, name='embedding_layer'):
         """
-        Typically, input_dim is the vocabulary size,
-        and output_dim the embedding dimension.
+        :param input_dim: input dimension. Typically, input_dim is the vocabulary size.
+        :param output_dim: output dimension. Typically, output_dim the embedding dimension.
+        :param name: name of embedding layer
         """
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -82,8 +91,9 @@ class EmbeddingLayer(object):
     def link(self, input):
         """
         Return the embeddings of the given indexes.
-        Input: tensor of shape (dim*)
-        Output: tensor of shape (dim*, output_dim)
+
+        :param input: tensor of dimension (dim*) with values in range(0, input_dim)
+        :return output: tensor of dimension (dim*, output_dim)
         """
         self.input = input
         self.output = self.embeddings[self.input]
@@ -100,6 +110,9 @@ class DropoutLayer(object):
         p has to be between 0 and 1 (1 excluded).
         p is the probability of dropping out a unit, so
         setting p to 0 is equivalent to have an identity layer.
+
+        :param p: dropout rate
+        :param name: name of dropout layer 
         """
         assert 0. <= p < 1.
         self.p = p
@@ -109,6 +122,9 @@ class DropoutLayer(object):
     def link(self, input):
         """
         Dropout link: we just apply mask to the input.
+
+        :param input: tensor of dimension (dims*, input_dim)
+        :return output: tensor of dimension (dims*, input_dim) with mask applied 
         """
         if self.p > 0:
             mask = self.rng.binomial(n=1, p=1-self.p, size=input.shape,
@@ -123,16 +139,15 @@ class DropoutLayer(object):
 class LSTM(object):
     """
     Long short-term memory (LSTM). Can be used with or without batches.
-    Without batches:
-        Input: matrix of dimension (sequence_length, input_dim)
-        Output: vector of dimension (output_dim)
-    With batches:
-        Input: tensor3 of dimension (batch_size, sequence_length, input_dim)
-        Output: matrix of dimension (batch_size, output_dim)
     """
     def __init__(self, input_dim, hidden_dim, with_batch=True, name='LSTM'):
         """
         Initialize neural network.
+
+        :param input_dim: input dimension
+        :param hidden_dim: dimension of hidden layer
+        :param with_batch: use batch or not
+        :param name: name of LSTM
         """
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
@@ -179,6 +194,11 @@ class LSTM(object):
         Propagate the input through the network and return the last hidden
         vector. The whole sequence is also accessible via self.h, but
         where self.h of shape (sequence_length, batch_size, output_dim)
+
+        :param input: matrix of dimension (sequence_length, input_dim) without batches, 
+                      tensor3 of dimension (batch_size, sequence_length, input_dim) with batches
+        :return output: vector of dimension (output_dim) without batches,
+                        matrix of dimension (batch_size, output_dim) with batches
         """
         def recurrence(x_t, c_tm1, h_tm1):
             i_t = T.nnet.sigmoid(T.dot(x_t, self.w_xi) +
@@ -222,6 +242,10 @@ class LSTM(object):
 def log_sum_exp(x, axis=None):
     """
     Sum probabilities in the log-space.
+
+    :param x: value of state
+    :param axis: axis to be summed
+    :return log of probability summation
     """
     xmax = x.max(axis=axis, keepdims=True)
     xmax_ = x.max(axis=axis)
@@ -231,17 +255,13 @@ def log_sum_exp(x, axis=None):
 def forward(observations, transitions, viterbi=False,
             return_alpha=False, return_best_sequence=False):
     """
-    Takes as input:
-        - observations, sequence of shape (n_steps, n_classes)
-        - transitions, sequence of shape (n_classes, n_classes)
-    Probabilities must be given in the log space.
-    Compute alpha, matrix of size (n_steps, n_classes), such that
-    alpha[i, j] represents one of these 2 values:
-        - the probability that the real path at node i ends in j
-        - the maximum probability of a path finishing in j at node i (Viterbi)
-    Returns one of these 2 values:
-        - alpha
-        - the final probability, which can be:
+    :param observations: sequence of shape (n_steps, n_classes)
+    :param transitions: sequence of shape (n_classes, n_classes)
+    :return alpha: matrix of size (n_steps, n_classes), such that alpha[i, j] represents one of these 2 values:
+                    - the probability that the real path at node i ends in j
+                    - the maximum probability of a path finishing in j at node i (Viterbi). 
+                   Probabilities must be given in the log space.
+    :return the final probability, which can be:
             - the sum of the probabilities of all paths
             - the probability of the best path (Viterbi)
     """

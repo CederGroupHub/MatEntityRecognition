@@ -40,8 +40,9 @@ class MatIdentification(object):
     def mat_identify_sent(self, input_sent):
         """
         Identify materials in a sentence, which is a list of tokens.
+
         :param input_sent: list of tokens representing a sentence
-        :return: list of materials from LSTM
+        :return materials: list of materials from LSTM
         """
         # goal
         materials = []
@@ -72,8 +73,9 @@ class MatIdentification(object):
     def mat_identify(self, input_para):
         """
 		Identify materials in a paragraph, which is plain text.
-		Input: str representing a paragraph
-		Output: dict containing materials from CDE (dict['CDE']) and materials from LSTM (dict['LSTM'])
+		
+        :param input_para: str representing a paragraph
+		:return materials: dict containing materials from CDE (dict['CDE']) and materials from LSTM (dict['LSTM'])
 		"""
         # goal
         materials = {}
@@ -103,6 +105,11 @@ class MatRecognition():
 	"""
 
     def __init__(self, model_path=None, mat_identify_model_path=None, parse_dependency=False):
+        """
+        :param model_path: path to the model for materials recognition. If None input, default initialize.
+        :param mat_identify_model_path: path to the model for materials identification. If None input, default initialize.
+        :param parse_dependency: parse dependency or not. If True, the parsed dependency will be used as the key word feature.
+        """
         if model_path == None:
             file_path = os.path.dirname(__file__)
             if parse_dependency:
@@ -134,8 +141,9 @@ class MatRecognition():
     def mat_recognize_sent(self, input_sent):
         """
 		Recognize target/precursor in a sentence, which is a list of tokens.
-		Input: list of tokens representing a sentence 
-		Output: dict containing keys of precursors, targets, and other materials, 
+		
+        :param input_sent: list of tokens representing a sentence 
+		:return recognitionResult: dict containing keys of precursors, targets, and other materials, 
 				the value of each one is a list of index of token in the sentence
 		"""
         # goal
@@ -169,8 +177,13 @@ class MatRecognition():
     def mat_recognize(self, input_para, materials=None):
         """
 		Recognize target/precursor in a paragraph, which is plain text.
-		Input: str representing a paragraph
-		Output: 4 list objects of all materials, precursors, targets, and other materials 
+		
+        :param input_para: str representing a paragraph
+        :param materials: list of materials tokens. If none, use default LSTM model to get materials tokens.
+		:return mat_to_recognize: list of all materials
+        :return precursors: list of all precursors
+        :return targets: list of all targets
+        :return other_materials: list of all materials other than targets and precursors
 		"""
         # goal
         mat_to_recognize = []
