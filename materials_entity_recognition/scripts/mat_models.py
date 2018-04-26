@@ -122,9 +122,9 @@ class MatRecognition():
             self.model.parameters['keyword_dim'] = 0
         if mat_identify_model_path == None:
             file_path = os.path.dirname(__file__)
-            self.identify_model = MatIdentification(os.path.join(file_path, '..', 'models/matIdentification'))
+            self.identify_model = MatIdentification()
         else:
-            self.identify_model = MatIdentification(mat_identify_model_path)
+            self.identify_model = MatIdentification(Model(model_path=mat_identify_model_path))
         parameters = self.model.parameters
         word_to_id, char_to_id, tag_to_id = [
             {v: k for k, v in list(x.items())}
