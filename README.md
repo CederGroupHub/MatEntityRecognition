@@ -22,3 +22,6 @@ Parameters:
 	Input: plain text of a paragraph  
 	Output: 4 list objects, which are all materials, precursors, targets, other materials, respectively.  
 
+Tornado Server (localhost:7730):
+
+	python -m materials_entity_recognition.scripts.tornado
