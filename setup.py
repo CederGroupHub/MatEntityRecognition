@@ -20,7 +20,8 @@ if __name__ == "__main__":
               'pubchempy',
               "nltk",
               'numpy',
-              'scipy'
+              'scipy',
+              'tornado',
           ],
           zip_safe=False)
 
