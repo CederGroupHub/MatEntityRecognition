@@ -14,7 +14,7 @@ if __name__ == "__main__":
           install_requires=[
               'chemdataextractor',
               'theano',
-              'spacy',
+              'spacy==1.10.1',
               'unidecode',
               'regex',
               'pubchempy',
