@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 
 import tornado.escape
 import tornado.httpserver
@@ -18,12 +19,17 @@ class MERHandler(tornado.web.RequestHandler):
     route = r'/MER/recognize'
     version = '2018072300'
 
-    def __init__(self, *args, **kwargs):
-        super(MERHandler, self).__init__(*args, **kwargs)
-        self.model = MatRecognition()
-
     def initialize(self, *args, **kwargs):
-        pass
+        if 'MER_models' not in self.application.settings:
+            self.application.settings['MER_models'] = {}
+        models = self.application.settings['MER_models']
+
+        pid = os.getpid()
+        if pid not in models:
+            model = MatRecognition()
+            models[pid] = model
+
+        self.model = models[pid]
 
     def post(self):
         def error_wrong_format():
