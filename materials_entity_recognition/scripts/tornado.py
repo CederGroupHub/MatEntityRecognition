@@ -18,8 +18,12 @@ class MERHandler(tornado.web.RequestHandler):
     route = r'/MER/recognize'
     version = '2018072300'
 
-    def initialize(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        super(MERHandler, self).__init__(*args, **kwargs)
         self.model = MatRecognition()
+
+    def initialize(self, *args, **kwargs):
+        pass
 
     def post(self):
         def error_wrong_format():
