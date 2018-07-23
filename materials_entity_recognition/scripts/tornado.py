@@ -83,7 +83,7 @@ if __name__ == "__main__":
     server.bind(address=args.address, port=args.port)
     logging.info('Going to main loop on %s:%d...', args.address, args.port)
     logging.info('Spawning processes...')
-    server.start(0)
+    server.start(4)
     try:
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
