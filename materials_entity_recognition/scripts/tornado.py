@@ -88,6 +88,9 @@ if __name__ == "__main__":
                         help='Listen port.')
     args = parser.parse_args()
 
+    os.environ['OMP_NUM_THREADS'] = '1'
+    os.environ['MKL_NUM_THREADS'] = '1'
+    
     app = make_app()
     server = tornado.httpserver.HTTPServer(app)
     server.bind(address=args.address, port=args.port)
