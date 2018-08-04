@@ -90,6 +90,7 @@ if __name__ == "__main__":
 
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['MKL_NUM_THREADS'] = '1'
+    os.environ['OPENBLAS_NUM_THREADS'] = '1'
     
     app = make_app()
     server = tornado.httpserver.HTTPServer(app)
