@@ -14,7 +14,12 @@ Install:
 Use:
 
 	from materials_entity_recognition import MatRecognition   
+	# if not enabling dependency parsing as feature
 	model = MatRecognition()  
+	# if enabling dependency parsing as feature, set parse_dependency as True (the default value is False)
+	# the performance would be better (increasing the F1 score of target classification by 1%~2%)
+	# but the program would be slower
+	# model_new = MatRecognition(parse_dependency=True)
 	all_materials, precursors, targets, other_materials = model.mat_recognize(input_para_text)  
 
 Parameters:
