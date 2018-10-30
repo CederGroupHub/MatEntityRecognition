@@ -7,6 +7,8 @@ import theano.tensor as T
 import codecs
 import pickle
 import spacy
+import logging
+theano.theano_logger.setLevel(logging.ERROR)
 
 from .utils import shared, set_values, get_name
 from .nn import HiddenLayer, EmbeddingLayer, DropoutLayer, LSTM, forward
