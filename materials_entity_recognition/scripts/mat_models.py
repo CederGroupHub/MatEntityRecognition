@@ -61,10 +61,7 @@ class MatIdentification(object):
         mat_begin = False
         for tmp_index, y_pred in enumerate(y_preds):
             if y_pred == 'B-Mat':
-                materials.append({'text': input_sent[tmp_index]['text'],
-                                  'start': input_sent[tmp_index]['start'],
-                                  'end': input_sent[tmp_index]['end'],
-                                  })
+                materials.append(input_sent[tmp_index])
                 mat_begin = True
             elif y_pred == 'I-Mat' and mat_begin == True:
                 materials[-1]['end'] = input_sent[tmp_index]['end']
@@ -111,7 +108,11 @@ class MatIdentification(object):
                     token_style = 'attribute'
 
             if token_style == 'dict':
-                all_sents = pre_tokens
+                for tmp_sent in pre_tokens:
+                    # prepare input sentences for LSTM
+                    input_sent = [{'text': tmp_token['text'], 'start': tmp_token['start'], \
+                                    'end': tmp_token['end']} for tmp_token in tmp_sent]
+                    all_sents.append(input_sent)
             elif token_style == 'attribute':
                 for tmp_sent in pre_tokens:
                     # prepare input sentences for LSTM
@@ -288,7 +289,11 @@ class MatRecognition():
                     token_style = 'attribute'
 
             if token_style == 'dict':
-                all_tokens = pre_tokens
+                for tmp_sent in pre_tokens:
+                    # prepare input sentences for LSTM
+                    input_sent = [{'text': tmp_token['text'], 'start': tmp_token['start'], \
+                                   'end': tmp_token['end']} for tmp_token in tmp_sent]
+                    all_tokens.append(input_sent)
             elif token_style == 'attribute':
                 for tmp_sent in pre_tokens:
                     # prepare input sentences for LSTM
