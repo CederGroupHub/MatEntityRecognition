@@ -61,7 +61,10 @@ class MatIdentification(object):
         mat_begin = False
         for tmp_index, y_pred in enumerate(y_preds):
             if y_pred == 'B-Mat':
-                materials.append(input_sent[tmp_index].copy())
+                materials.append({'text': input_sent[tmp_index]['text'],
+                                  'start': input_sent[tmp_index]['start'],
+                                  'end': input_sent[tmp_index]['end'],
+                                  })
                 mat_begin = True
             elif y_pred == 'I-Mat' and mat_begin == True:
                 materials[-1]['end'] = input_sent[tmp_index]['end']
