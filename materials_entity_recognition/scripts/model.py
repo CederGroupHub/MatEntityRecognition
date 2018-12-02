@@ -117,6 +117,7 @@ class Model(object):
               pre_emb,
               crf,
               cap_dim,
+              topic_dim,
               keyword_dim,
               training=True,
               **kwargs
@@ -159,6 +160,8 @@ class Model(object):
         tag_ids = T.ivector(name='tag_ids')
         if cap_dim:
             cap_ids = T.ivector(name='cap_ids')
+        if topic_dim:
+            topics = T.fmatrix(name='topics')
         if keyword_dim:
             key_words = T.imatrix(name='key_words')
 
@@ -266,6 +269,13 @@ class Model(object):
             input_dim += cap_dim
             cap_layer = EmbeddingLayer(n_cap, cap_dim, name='cap_layer')
             inputs.append(cap_layer.link(cap_ids))
+
+        #
+        # topic feature
+        #
+        if topic_dim:
+            input_dim += topic_dim
+            inputs.append(topics)
 
         #
         # key words feature
@@ -385,6 +395,8 @@ class Model(object):
             eval_inputs.append(char_pos_ids)
         if cap_dim:
             eval_inputs.append(cap_ids)
+        if topic_dim:
+            eval_inputs.append(topics)
         if keyword_dim:
             eval_inputs.append(key_words)
             pass

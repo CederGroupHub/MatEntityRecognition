@@ -1,8 +1,10 @@
 import codecs
+import numpy as np
 
 from .utils import create_dico, create_mapping, zero_digits
 from .utils import iob2, iob_iobes
 from .dependency_func import get_key_words
+from .sent_topic_func import get_topics
 
 __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
@@ -13,7 +15,7 @@ __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 # vb multi IN
 key_words_list = ['r_prepared', 'r_used', 'l_using', 'r_synthesized', 'l_prepared from', 'l_prepared by', 'l_sintered in', 'l_calcined in', 'r_added', 'r_weighed', 'r_mixed', 'l_prepared', 'r_dissolved', 'l_synthesized from', 'l_synthesized by', 'l_weighed', 'l_dissolved in', 'l_mixed in', 'l_heated in', 'l_milled']
 key_words_dict = {w: i for (i, w) in enumerate(key_words_list)}
-
+topic_dimension = 15
 
 def load_sentences(path, lower, zeros):
     """
@@ -145,7 +147,7 @@ def cap_feature(s):
         return 3
 
 
-def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False):
+def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False, use_topic=False):
     """
     Prepare a sentence for evaluation.
 
@@ -154,6 +156,7 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
     :param char_to_id: mapping from a character to a number (id)
     :param lower: use lower case or not
     :param use_key_word: use key words or not
+    :param use_topic: use topic feature or not
     :return dict corresponding to input features
     """
     def f(x): return x.lower() if lower else x
@@ -167,6 +170,13 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
     chars = [[char_to_id[c] for c in w if c in char_to_id]
              for w in str_words]
     caps = [cap_feature(w) for w in str_words]
+
+    # modified appended
+    topics = [[0]*topic_dimension for w in str_words]
+    if use_topic:
+        # get topics
+        topics = get_topics(str_words)
+    topics = np.array(topics, np.float32)
 
     # modified appended
     key_words = [[0]*len(key_words_list) for w in str_words]
@@ -183,6 +193,7 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
         'words': words,
         'chars': chars,
         'caps': caps,
+        'topics': topics,
         'key_words': key_words,
     }
 
