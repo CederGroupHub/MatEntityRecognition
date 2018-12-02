@@ -26,6 +26,8 @@ class MatIdentification(object):
             model = Model(model_path=model_path)
         self.model = model
         self.parameters = self.model.parameters
+        if 'topic_dim' not in self.parameters:
+            self.parameters['topic_dim'] = 0
         if 'keyword_dim' not in self.parameters:
             self.parameters['keyword_dim'] = 0
 
@@ -108,7 +110,11 @@ class MatIdentification(object):
                     token_style = 'attribute'
 
             if token_style == 'dict':
-                all_sents = pre_tokens
+                for tmp_sent in pre_tokens:
+                    # prepare input sentences for LSTM
+                    input_sent = [{'text': tmp_token['text'], 'start': tmp_token['start'], \
+                                    'end': tmp_token['end']} for tmp_token in tmp_sent]
+                    all_sents.append(input_sent)
             elif token_style == 'attribute':
                 for tmp_sent in pre_tokens:
                     # prepare input sentences for LSTM
@@ -136,7 +142,7 @@ class MatRecognition():
 	Use LSTM for materials recognition
 	"""
 
-    def __init__(self, model_path=None, mat_identify_model_path=None, parse_dependency=False):
+    def __init__(self, model_path=None, mat_identify_model_path=None, parse_dependency=False, use_topic=False):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         :param mat_identify_model_path: path to the model for materials identification. If None input, default initialize.
@@ -146,10 +152,14 @@ class MatRecognition():
             file_path = os.path.dirname(__file__)
             if parse_dependency:
                 self.model = Model(model_path=os.path.join(file_path, '..', 'models/matRecognition2'))
+            elif use_topic:
+                self.model = Model(model_path=os.path.join(file_path, '..', 'models/matRecognition3'))
             else:
                 self.model = Model(model_path=os.path.join(file_path, '..', 'models/matRecognition'))
         else:
             self.model = Model(model_path=model_path)
+        if 'topic_dim' not in self.model.parameters:
+            self.model.parameters['topic_dim'] = 0
         if 'keyword_dim' not in self.model.parameters:
             self.model.parameters['keyword_dim'] = 0
         if mat_identify_model_path == None:
@@ -185,9 +195,12 @@ class MatRecognition():
         if self.parameters['keyword_dim'] != 0:
             sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
                                         lower=self.parameters['lower'], use_key_word=True)
+        elif self.parameters['topic_dim'] != 0:
+            sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
+                                        lower=self.parameters['lower'], use_topic=True)
         else:
             sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
-                                        lower=self.parameters['lower'], use_key_word=False)
+                                        lower=self.parameters['lower'], use_key_word=False, use_topic=False)
         input = create_input(sentence, self.parameters, False)
         # Prediction
         if self.parameters['crf']:
@@ -285,7 +298,11 @@ class MatRecognition():
                     token_style = 'attribute'
 
             if token_style == 'dict':
-                all_tokens = pre_tokens
+                for tmp_sent in pre_tokens:
+                    # prepare input sentences for LSTM
+                    input_sent = [{'text': tmp_token['text'], 'start': tmp_token['start'], \
+                                   'end': tmp_token['end']} for tmp_token in tmp_sent]
+                    all_tokens.append(input_sent)
             elif token_style == 'attribute':
                 for tmp_sent in pre_tokens:
                     # prepare input sentences for LSTM

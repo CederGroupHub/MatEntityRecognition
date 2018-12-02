@@ -205,7 +205,7 @@ def sent_regulate(sentence):
         word = sentence[i]
         word_normal = word_regulate(word)
         if len(word_normal) != 0:
-            if (word_normal != '-'):
+            if (word_normal != '-') or len(sent_normal) == 0:
                 sent_normal.append(word_normal)
             elif sent_normal[-1] != 'MAT' :
                 j = i
