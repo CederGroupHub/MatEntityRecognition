@@ -14,14 +14,12 @@ if __name__ == "__main__":
           install_requires=[
               'chemdataextractor',
               'theano',
-              'spacy==1.10.1',
+              'spacy',
               'unidecode',
               'regex',
               'pubchempy',
               "nltk",
               'numpy',
               'scipy',
-              'tornado',
           ],
           zip_safe=False)
-
