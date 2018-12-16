@@ -21,6 +21,5 @@ if __name__ == "__main__":
               "nltk",
               'numpy',
               'scipy',
-              'tornado',
           ],
           zip_safe=False)
