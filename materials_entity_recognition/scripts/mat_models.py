@@ -16,15 +16,17 @@ class MatIdentification(object):
     Use LSTM for materials identification
     """
 
-    def __init__(self, model=None):
+    def __init__(self, model_path=None):
         """
-        :param model: A model.Model object, if None input, default initialize.
+        :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
-        if model is None:
+        if model_path is None:
             file_path = os.path.dirname(__file__)
             model_path = os.path.join(file_path, '..', 'models/matIdentification')
-            model = Model(model_path=model_path)
-        self.model = model
+            self.model = Model(model_path=model_path)
+        else:
+            self.model = Model(model_path=model_path)
+
         self.parameters = self.model.parameters
         if 'topic_dim' not in self.parameters:
             self.parameters['topic_dim'] = 0
@@ -166,7 +168,7 @@ class MatRecognition():
             file_path = os.path.dirname(__file__)
             self.identify_model = MatIdentification()
         else:
-            self.identify_model = MatIdentification(Model(model_path=mat_identify_model_path))
+            self.identify_model = MatIdentification(model_path=mat_identify_model_path)
         parameters = self.model.parameters
         word_to_id, char_to_id, tag_to_id = [
             {v: k for k, v in list(x.items())}
