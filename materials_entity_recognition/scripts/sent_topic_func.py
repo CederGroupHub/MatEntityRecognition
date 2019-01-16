@@ -50,3 +50,4 @@ def get_topics(str_words):
 if __name__ == '__main__':
     print(get_topics(['The', '<MAT>', 'is', 'prepared', 'with', 'solid', 'state', 'synthesis', '.']))
     
+

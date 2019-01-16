@@ -5,6 +5,7 @@ from .utils import create_dico, create_mapping, zero_digits
 from .utils import iob2, iob_iobes
 from .dependency_func import get_key_words
 from .sent_topic_func import get_topics
+from .sent_ele_func import get_ele_features
 
 __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
@@ -147,7 +148,8 @@ def cap_feature(s):
         return 3
 
 
-def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False, use_topic=False):
+def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False, \
+                        use_topic=False, use_CHO=False, use_eleNum=False, input_tokens=[], original_para_text=''):
     """
     Prepare a sentence for evaluation.
 
@@ -178,6 +180,12 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
         topics = get_topics(str_words)
     topics = np.array(topics, np.float32)
 
+    ele_nums = [[0] for w in str_words]
+    has_CHOs = [[0] for w in str_words]
+    if use_CHO or use_eleNum:
+        # get ele_num
+        ele_nums, has_CHOs = get_ele_features(input_tokens, original_para_text)
+
     # modified appended
     key_words = [[0]*len(key_words_list) for w in str_words]
     if use_key_word:
@@ -193,6 +201,8 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
         'words': words,
         'chars': chars,
         'caps': caps,
+        'ele_nums': ele_nums,
+        'has_CHOs': has_CHOs,
         'topics': topics,
         'key_words': key_words,
     }

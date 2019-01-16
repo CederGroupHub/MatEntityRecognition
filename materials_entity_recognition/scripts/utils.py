@@ -248,6 +248,10 @@ def create_input(data, parameters, add_label, singletons=None):
         input.append(char_pos)
     if parameters['cap_dim']:
         input.append(caps)
+    if 'ele_num' in parameters and parameters['ele_num']:
+        input.append(data['ele_nums'])
+    if 'has_CHO' in parameters and parameters['has_CHO']:
+        input.append(data['has_CHOs'])
     if 'topic_dim' in parameters and parameters['topic_dim']:
         input.append(data['topics'])
     if 'keyword_dim' in parameters and parameters['keyword_dim']:

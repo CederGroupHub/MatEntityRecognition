@@ -32,6 +32,10 @@ class MatIdentification(object):
             self.parameters['topic_dim'] = 0
         if 'keyword_dim' not in self.parameters:
             self.parameters['keyword_dim'] = 0
+        if 'has_CHO' not in self.model.parameters:
+            self.model.parameters['has_CHO'] = False
+        if 'ele_num' not in self.model.parameters:
+            self.model.parameters['ele_num'] = False
 
         self.word_to_id, self.char_to_id, self.tag_to_id = [
             {v: k for k, v in list(x.items())}
@@ -160,10 +164,15 @@ class MatRecognition():
                 self.model = Model(model_path=os.path.join(file_path, '..', 'models/matRecognition'))
         else:
             self.model = Model(model_path=model_path)
+            print('model_path', model_path)
         if 'topic_dim' not in self.model.parameters:
             self.model.parameters['topic_dim'] = 0
         if 'keyword_dim' not in self.model.parameters:
             self.model.parameters['keyword_dim'] = 0
+        if 'has_CHO' not in self.model.parameters:
+            self.model.parameters['has_CHO'] = False
+        if 'ele_num' not in self.model.parameters:
+            self.model.parameters['ele_num'] = False
         if mat_identify_model_path == None:
             file_path = os.path.dirname(__file__)
             self.identify_model = MatIdentification()
@@ -182,7 +191,7 @@ class MatRecognition():
         self.f_eval = f_eval
         self.model.reload()
 
-    def mat_recognize_sent(self, input_sent):
+    def mat_recognize_sent(self, input_sent, ori_para_text=''):
         """
 		Recognize target/precursor in a sentence, which is a list of tokens.
 		
@@ -200,9 +209,30 @@ class MatRecognition():
         elif self.parameters['topic_dim'] != 0:
             sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
                                         lower=self.parameters['lower'], use_topic=True)
+        elif self.parameters['has_CHO'] or self.parameters['ele_num']:    
+            sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
+                                        lower=self.parameters['lower'], \
+                                        use_key_word=False, use_topic=False, \
+                                        use_CHO=self.parameters['has_CHO'], use_eleNum=self.parameters['ele_num'], \
+                                        input_tokens=input_sent, original_para_text=ori_para_text)
         else:
             sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, \
-                                        lower=self.parameters['lower'], use_key_word=False, use_topic=False)
+                                        lower=self.parameters['lower'], \
+                                        use_key_word=False, use_topic=False, use_CHO=False, use_eleNum=False)          
+        # use_key_word = False
+        # use_topic = False
+        # use_CHO
+        # use_eleNum
+        # usePos
+        # if self.parameters.get('keyword_dim', 0) != 0:
+        #     use_key_word = True
+
+
+        # sentence = prepare_sentence(words, self.word_to_id, self.char_to_id, 
+        #                             lower=self.parameters['lower'], 
+        #                             use_key_word=(self.parameters['keyword_dim'] != 0),
+        #                             use_topic=(self.parameters['topic_dim'] != 0),
+        #                             )
         input = create_input(sentence, self.parameters, False)
         # Prediction
         if self.parameters['crf']:
@@ -347,7 +377,10 @@ class MatRecognition():
                 all_sents.append(input_sent)
 
         for input_sent in all_sents:
-            recognitionResult = self.mat_recognize_sent(input_sent)
+            if self.parameters['has_CHO'] or self.parameters['ele_num']:    
+                recognitionResult = self.mat_recognize_sent(input_sent, ori_para_text=input_para)
+            else:
+                recognitionResult = self.mat_recognize_sent(input_sent)
             precursors.extend([input_sent[tmp_index] for tmp_index in recognitionResult['precursors']])
             targets.extend([input_sent[tmp_index] for tmp_index in recognitionResult['targets']])
             other_materials.extend([input_sent[tmp_index] for tmp_index in recognitionResult['other_materials']])
