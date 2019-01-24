@@ -143,6 +143,147 @@ class MatIdentification(object):
         return materials
 
 
+class MatTPIdentification(object):
+    """
+    Use LSTM for materials/target/precursor identification in one step
+    """
+
+    def __init__(self, model_path=None):
+        """
+        :param model_path: path to the model for materials recognition. If None input, default initialize.
+        """
+        if model_path is None:
+            file_path = os.path.dirname(__file__)
+            model_path = os.path.join(file_path, '..', 'models/matIdentification')
+            self.model = Model(model_path=model_path)
+        else:
+            self.model = Model(model_path=model_path)
+
+        self.parameters = self.model.parameters
+        if 'topic_dim' not in self.parameters:
+            self.parameters['topic_dim'] = 0
+        if 'keyword_dim' not in self.parameters:
+            self.parameters['keyword_dim'] = 0
+        if 'has_CHO' not in self.model.parameters:
+            self.model.parameters['has_CHO'] = False
+        if 'ele_num' not in self.model.parameters:
+            self.model.parameters['ele_num'] = False
+
+        self.word_to_id, self.char_to_id, self.tag_to_id = [
+            {v: k for k, v in list(x.items())}
+            for x in [self.model.id_to_word, self.model.id_to_char, self.model.id_to_tag]
+        ]
+        _, f_eval = self.model.build(training=False, **self.parameters)
+        self.f_eval = f_eval
+        self.model.reload()
+
+    def matTP_identify_sent(self, input_sent):
+        """
+        Identify materials in a sentence, which is a list of tokens.
+
+        :param input_sent: list of tokens representing a sentence
+        :return materials: list of materials from LSTM
+        """
+        # goal
+        recognitionResult = {'all_materials': [], 'precursors': [], 'targets': [], 'other_materials': []}
+        type_to_abbr = {'precursors': 'Pre', 'targets': 'Tar', 'other_materials': 'Mat'}
+        abbr_to_type = {v: k for (k, v) in type_to_abbr.items()}
+        # Prepare input
+        words = [tmp_token['text'] for tmp_token in input_sent]
+        sentence = prepare_sentence(words, self.word_to_id, self.char_to_id,
+                                    lower=self.parameters['lower'])
+        input = create_input(sentence, self.parameters, False)
+        # Prediction
+        if self.parameters['crf']:
+            y_preds = np.array(self.f_eval(*input))[1:-1]
+        else:
+            y_preds = self.f_eval(*input).argmax(axis=1)
+        y_preds = [self.model.id_to_tag[y_pred] for y_pred in y_preds]
+        y_preds = iobes_iob(y_preds)
+        mat_begin = None
+        for tmp_index, y_pred in enumerate(y_preds):
+            if y_pred.startswith('B-'):
+                mat_begin = y_pred[2:]
+                recognitionResult['all_materials'].append(input_sent[tmp_index])
+                recognitionResult[abbr_to_type[mat_begin]].append(input_sent[tmp_index])
+            elif y_pred.startswith('I-') and mat_begin == y_pred[2:]:
+                recognitionResult['all_materials'][-1]['end'] = input_sent[tmp_index]['end']
+                recognitionResult['all_materials'][-1]['text'] += ' ' + input_sent[tmp_index]['text']
+                recognitionResult[abbr_to_type[mat_begin]][-1]['end'] = input_sent[tmp_index]['end']
+                recognitionResult[abbr_to_type[mat_begin]][-1]['text'] += ' ' + input_sent[tmp_index]['text']
+            else:
+                mat_begin = None
+        return recognitionResult
+
+    def matTP_identify(self, input_para, pre_tokens=None):
+        """
+        Identify materials in a paragraph, which is plain text.
+        
+        :param input_para: str representing a paragraph
+        :param pre_tokens: list of list of tokens. Each list inside is a sentence.
+                     If none, use CDE to get tokens.
+        :return materials: dict containing materials from CDE (dict['CDE']) and materials from LSTM (dict['LSTM'])
+        """
+        # goal
+        all_materials = []
+        precursors = []
+        targets = []
+        other_materials = []
+
+        all_sents = []
+        if pre_tokens == None:
+            # CDE tokenization
+            CDE_para = CDE.doc.Paragraph(input_para)
+            for tmp_sent in CDE_para:
+                # prepare input sentences for LSTM
+                input_sent = [
+                    {'text': tmp_token.text, 'start': tmp_token.start, 'end': tmp_token.end, 'sentence': tmp_sent.text} \
+                    for tmp_token in tmp_sent.tokens]
+                all_sents.append(input_sent)
+        else:
+            # get tokens in dict style
+            token_style = None
+            if len(pre_tokens) > 0 and len(pre_tokens[0]) > 0:
+                if isinstance(pre_tokens[0][0], dict) and 'text' in pre_tokens[0][0] and \
+                    'start' in pre_tokens[0][0] and 'end' in pre_tokens[0][0]:
+                    token_style = 'dict' 
+                elif 'text' in pre_tokens[0][0].__dict__ and 'start' in pre_tokens[0][0].__dict__ and \
+                    'end' in pre_tokens[0][0].__dict__:
+                    token_style = 'attribute'
+
+            if token_style == 'dict':
+                for tmp_sent in pre_tokens:
+                    # prepare input sentences for LSTM
+                    input_sent = [{'text': tmp_token['text'], 'start': tmp_token['start'], \
+                                    'end': tmp_token['end']} for tmp_token in tmp_sent]
+                    all_sents.append(input_sent)
+            elif token_style == 'attribute':
+                for tmp_sent in pre_tokens:
+                    # prepare input sentences for LSTM
+                    input_sent = [{'text': tmp_token.text, 'start': tmp_token.start, \
+                                    'end': tmp_token.end} for tmp_token in tmp_sent]
+                    all_sents.append(input_sent)
+            else:
+                print('Error! Improper input of pre_tokens!')
+                all_sents = []
+
+        for input_sent in all_sents:
+            input_sent = list(filter(lambda tmp_token: tmp_token['text'].strip() != '', input_sent))
+            recognitionResult = self.matTP_identify_sent(input_sent)
+            all_materials.extend(recognitionResult['all_materials'])
+            precursors.extend(recognitionResult['precursors'])
+            targets.extend(recognitionResult['targets'])
+            other_materials.extend(recognitionResult['other_materials'])
+
+        # reformated as the exact words in the original paragraph
+        for tmp_mat in all_materials + precursors + targets + other_materials:
+            # debug
+            # tmp_mat['text'] = 'test'
+            tmp_mat['text'] = input_para[tmp_mat['start']: tmp_mat['end']]
+
+        return all_materials, precursors, targets, other_materials
+
+
 class MatRecognition():
     """
 	Use LSTM for materials recognition
