@@ -1,5 +1,7 @@
 import codecs
 import numpy as np
+import spacy
+import re
 
 from .utils import create_dico, create_mapping, zero_digits
 from .utils import iob2, iob_iobes
@@ -12,6 +14,8 @@ __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 # Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
+
+nlp = spacy.load('en')
 
 # vb multi IN
 key_words_list = ['r_prepared', 'r_used', 'l_using', 'r_synthesized', 'l_prepared from', 'l_prepared by', 'l_sintered in', 'l_calcined in', 'r_added', 'r_weighed', 'r_mixed', 'l_prepared', 'r_dissolved', 'l_synthesized from', 'l_synthesized by', 'l_weighed', 'l_dissolved in', 'l_mixed in', 'l_heated in', 'l_milled']
@@ -206,5 +210,67 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
         'topics': topics,
         'key_words': key_words,
     }
+
+
+def prepare_embedding_matrix(id_to_word, word_dim, emb_path=None, emb_dict=None):
+    """
+    load embeddings as a numpy 2d array
+    """
+    n_words = len(id_to_word)
+    embedding_matrix = np.random.uniform(low=-1.0, high=1.0, size=(n_words, word_dim))
+
+    # get embedding dict
+    assert (emb_path or emb_dict)
+    if not emb_dict:
+        # load from emb_path
+        print('Loading pretrained embeddings from %s...' % emb_path)
+        emb_dict = {}
+        emb_invalid = 0
+        for i, line in enumerate(codecs.open(emb_path, 'r', 'utf-8')):
+            line = line.rstrip().split()
+            if len(line) == word_dim + 1:
+                emb_dict[line[0]] = np.array(
+                    [float(x) for x in line[1:]]
+                ).astype(np.float32)
+            else:
+                emb_invalid += 1
+        if emb_invalid > 0:
+            print('WARNING: %i invalid lines' % emb_invalid)
+
+    # Lookup embedding dict
+    c_found = 0
+    c_lower = 0
+    c_zeros = 0
+    c_lemma = 0
+    for i in range(n_words):
+        word = id_to_word[i]
+        if word in emb_dict:
+            embedding_matrix[i] = emb_dict[word]
+            c_found += 1
+        elif word.lower() in emb_dict:
+            embedding_matrix[i] = emb_dict[word.lower()]
+            c_lower += 1
+        elif re.sub('\d', '0', word.lower()) in emb_dict:
+            embedding_matrix[i] = emb_dict[
+                re.sub('\d', '0', word.lower())
+            ]
+            c_zeros += 1
+        else:
+            word_lemma = nlp(word)[0].lemma_
+            if word_lemma in emb_dict:
+                embedding_matrix[i] = emb_dict[word_lemma]
+                c_lemma += 1
+    print('Loaded %i pretrained embeddings.' % len(emb_dict))
+    print(('%i / %i (%.4f%%) words have been initialized with '
+           'pretrained embeddings.') % (
+                c_found + c_lower + c_zeros + c_lemma, n_words,
+                100. * (c_found + c_lower + c_zeros + c_lemma) / n_words
+          ))
+    print(('%i found directly, %i after lowercasing, '
+           '%i after lowercasing + zero. %i after lemma.') % (
+              c_found, c_lower, c_zeros, c_lemma
+          ))
+
+    return embedding_matrix
 
 

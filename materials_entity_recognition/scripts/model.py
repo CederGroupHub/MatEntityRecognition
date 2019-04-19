@@ -50,6 +50,9 @@ class Model(object):
 
         self.components = {}
 
+        self.f_train = None
+        self.f_eval = None
+
     def save_mappings(self, id_to_word, id_to_char, id_to_tag):
         """
         We need to save the mappings if we want to use the model later.
@@ -462,4 +465,8 @@ class Model(object):
                 givens=({is_train: np.cast['int32'](0)} if dropout else {})
             )
 
+        self.f_train = f_train
+        self.f_eval = f_eval 
         return f_train, f_eval
+
+
