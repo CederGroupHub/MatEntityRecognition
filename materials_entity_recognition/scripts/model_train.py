@@ -28,10 +28,13 @@ class Model_train(object):
 
     def __init__(self, model_path=None, model_name=None):
         """
-        Initialize the model. We either provide the parameters and a path where
-        we store the models, or the location of a trained model.
+        Initialize the model. We can init a empty model with model_name, or reload
+        a pre-trained model from model_path
 
-        :param model_path: File path to reload the model
+        :param model_path: File path to reload the model. If specified, model will be 
+        reloaded from model_path, and model_name will be discarded.
+        :param model_name: Name of the model. If specified, the model will save in a 
+        folder called model_name. 
         """
         # Model location
         if not model_path:
