@@ -16,7 +16,7 @@ class MatIdentification(object):
     Use LSTM for materials identification
     """
 
-    def __init__(self, model_path=None):
+    def __init__(self, model_path=None, emb_path=None):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
@@ -36,6 +36,7 @@ class MatIdentification(object):
             self.model.parameters['has_CHO'] = False
         if 'ele_num' not in self.model.parameters:
             self.model.parameters['ele_num'] = False
+        self.model.parameters['pre_emb'] = emb_path
 
         self.word_to_id, self.char_to_id, self.tag_to_id = [
             {v: k for k, v in list(x.items())}
@@ -148,7 +149,7 @@ class MatTPIdentification(object):
     Use LSTM for materials/target/precursor identification in one step
     """
 
-    def __init__(self, model_path=None):
+    def __init__(self, model_path=None, emb_path=None):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
@@ -168,6 +169,7 @@ class MatTPIdentification(object):
             self.model.parameters['has_CHO'] = False
         if 'ele_num' not in self.model.parameters:
             self.model.parameters['ele_num'] = False
+        self.model.parameters['pre_emb'] = emb_path
 
         self.word_to_id, self.char_to_id, self.tag_to_id = [
             {v: k for k, v in list(x.items())}
@@ -289,7 +291,9 @@ class MatRecognition():
 	Use LSTM for materials recognition
 	"""
 
-    def __init__(self, model_path=None, mat_identify_model_path=None, parse_dependency=False, use_topic=False):
+    def __init__(self, model_path=None, emb_path=None, 
+                    mat_identify_model_path=None, mat_identify_emb_path=None, 
+                    parse_dependency=False, use_topic=False):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         :param mat_identify_model_path: path to the model for materials identification. If None input, default initialize.
@@ -314,11 +318,12 @@ class MatRecognition():
             self.model.parameters['has_CHO'] = False
         if 'ele_num' not in self.model.parameters:
             self.model.parameters['ele_num'] = False
+        self.model.parameters['pre_emb'] = emb_path
         if mat_identify_model_path == None:
             file_path = os.path.dirname(__file__)
             self.identify_model = MatIdentification()
         else:
-            self.identify_model = MatIdentification(model_path=mat_identify_model_path)
+            self.identify_model = MatIdentification(model_path=mat_identify_model_path, emb_path=mat_identify_emb_path)
         parameters = self.model.parameters
         word_to_id, char_to_id, tag_to_id = [
             {v: k for k, v in list(x.items())}
