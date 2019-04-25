@@ -134,17 +134,16 @@ class Model_train(object):
         Build the network.
 
         :param dropout: droupout rate
-        :param char_dim: dimension of character feature
-        :param char_lstm_dim: dimension of hidden layer for lstm dealing with character feature
-        :param char_bidirect: use bidirectional lstm for character feature or not
+        :param input_vector: a boolean variable indicating if the input is a vector or not,
+                             should have an opposite value as input_matrix
+        :param input_matrix: a boolean variable indicating if the input is a matrix or not,
+                             should have an opposite value as input_vector
         :param word_dim: dimension of word feature
         :param word_lstm_dim: dimension of hidden layer for lstm dealing with word embedding
         :param word_bidirect: use bidirectional lstm for word recognition or not
         :param lr_method: learning method
-        :param pre_emb: pretrained embedding
+        :param pre_emb: pretrained embedding matrix
         :param crf: use crf or not
-        :param cap_dim: use capital character feature or not
-        :param keyword_dim: dimension of keyword feature
         :param training: training or not
         :param kwargs: customized parameters of model
         :return f_train: training function
@@ -351,18 +350,31 @@ class Model_train(object):
             dev_X=None, dev_Y=None, dev_sentences=None, 
             test_X=None, test_Y=None, test_sentences=None):
         """
-        Train network.
+        Train network. If validation/develop set and test set are provided 
+        (the last 6 varibles not set as None), the parameters producing the 
+        best result on validation set would be saved. Otherwise, the parameters
+        in the last epoch would be saved.
 
-        :param input_X: 2d array if using embedding, 3d array is not using embedding
-        :param input_Y: 2d array of tag ids of words in sentences
+        :param input_X: 2d array if providing embedding elsewhere, such as [[w0, w1, w2], [w0, w1, w2]]
+                        3d array if embedding directly assigned in input_X, such as 
+                            [
+                                [
+                                    [w0_emb_0, w0_emb_1, w0_emb_2],    # -> one token 
+                                    [w0_emb_0, w0_emb_1, w0_emb_2],    # -> one token
+                                ]                                      # -> one sentence
+                            ]                                          # -> all sentences
+        :param input_Y: 2d array of tag ids of words in sentences, such as [[t0, t1, t2], [t0, t1, t2]]
         :param n_epochs: number of epochs
         :param freq_eval: frequency to evaluate with validation/test sets
         :param dev_X: input_X for validation set
         :param dev_Y: input_Y for validation set
-        :param dev_sentences: original sentences in validation set
+        :param dev_sentences: original sentences in validation set 
+                              as CoNLL format for evaluation using CoNLL script
         :param test_X: input_X for test set
         :param test_Y: input_Y for test set
-        :param dev_sentences: original sentences in validation set
+        :param dev_sentences: original sentences in validation set 
+                              as CoNLL format for evaluation using CoNLL script
+        :return info_report: a brief report for the evaluation on validation and test sets
         """
 
         best_dev = -np.inf
@@ -418,8 +430,15 @@ class Model_train(object):
         """
         Predict with trained model.
 
-        :param input_X: 2d array if using embedding, 3d array is not using embedding
-        :return Y_predictions: 2d array of tag ids of words in sentences
+        :param input_X: 2d array if providing embedding elsewhere, such as [[w0, w1, w2], [w0, w1, w2]]
+                        3d array if embedding directly assigned in input_X, such as 
+                            [
+                                [
+                                    [w0_emb_0, w0_emb_1, w0_emb_2],    # -> one token 
+                                    [w0_emb_0, w0_emb_1, w0_emb_2],    # -> one token
+                                ]                                      # -> one sentence
+                            ]                                          # -> all sentences
+        :return input_Y: 2d array of tag ids of words in sentences, such as [[t0, t1, t2], [t0, t1, t2]]
         """
         # goal
         Y_predictions = []
@@ -439,8 +458,15 @@ class Model_train(object):
         """
         Predict with trained model.
 
-        :param input_X: 2d array if using embedding, 3d array is not using embedding
-        :return label_predictions: 2d array of tag names of words in sentences
+        :param input_X: 2d array if providing embedding elsewhere, such as [[w0, w1, w2], [w0, w1, w2]]
+                        3d array if embedding directly assigned in input_X, such as 
+                            [
+                                [
+                                    [w0_emb_0, w0_emb_1, w0_emb_2],    # -> one token 
+                                    [w0_emb_0, w0_emb_1, w0_emb_2],    # -> one token
+                                ]                                      # -> one sentence
+                            ]                                          # -> all sentences
+        :return input_Y: 2d array of tags of words in sentences, such as [[tag0, tag1, tag2], [tag0, tag1, tag2]]
         """
         # goal
         label_predictions = []

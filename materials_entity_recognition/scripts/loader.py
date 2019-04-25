@@ -214,7 +214,15 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
 
 def prepare_embedding_matrix(id_to_word, word_dim, emb_path=None, emb_dict=None):
     """
-    load embeddings as a numpy 2d array
+    load embeddings as a numpy 2d array. Source of embeddings can be provided by
+    specifying either emb_path or emb_dict
+
+    :param id_to_tag: mapping from a number (id) to a tag of word
+    :param word_dim: dimension of embedding for each word
+    :param emb_path: path to embedding file (str)
+    :param emb_dict: dict of embedding (dict such as {w0: emb0, w1: emb1})
+    :return embedding_matrix: a embedding matrix (numpy 2d array), the index of 
+                              matrix is consist with the id in id_to_word
     """
     n_words = len(id_to_word)
     embedding_matrix = np.random.uniform(low=-1.0, high=1.0, size=(n_words, word_dim))

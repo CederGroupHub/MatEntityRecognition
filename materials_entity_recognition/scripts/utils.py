@@ -266,6 +266,13 @@ def create_input(data, parameters, add_label, singletons=None):
 def evaluate(all_y_preds, all_y_reals, raw_sentences, id_to_tag, tag_scheme):
     """
     Evaluate current model using CoNLL script.
+
+    :param all_y_preds: a 2d list of predicted y for words in sentences
+    :param all_y_reals:: a 2d list of real y for words in sentences
+    :param raw_sentences: raw sentences as CoNLL format
+    :param id_to_tag: mapping from a number (id) to a tag of word
+    :param tag_scheme: "iobes" or "iobes"
+    :return : averaged F1 score
     """
     n_tags = len(id_to_tag)
     predictions = []
