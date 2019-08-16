@@ -1,5 +1,3 @@
-from synthesis_api_hub import Client
-
 __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
@@ -22,6 +20,8 @@ def get_sent_topic(sentence):
     :param sentence: plain sentence text
     :return topic: dict of (topic, value) pairs
     """
+    from synthesis_api_hub import Client
+
     with Client('synthesisproject.lbl.gov', 8005, 'topic') as topic_client:
         results = topic_client.infer_topics([sentence], 'lightlda_r0_sentence_topic_200')
     return normalize_topic(results[0][0])

@@ -10,6 +10,11 @@ Install:
 		git clone git@github.com:CederGroupHub/MatEntityRecognition.git 
 		cd MatEntityRecognition
 		pip install -e .
+	
+	Spacy is used. If there is an error saying 
+	    "Can't find model 'en'..." 
+	It is because the spacy data is not downloaded. Please use
+	    python -m spacy download en
 
 Use:
 
