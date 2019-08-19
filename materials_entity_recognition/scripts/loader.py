@@ -3,8 +3,6 @@ import numpy as np
 
 from .utils import create_dico, create_mapping, zero_digits
 from .utils import iob2, iob_iobes
-from .dependency_func import get_key_words
-from .sent_topic_func import get_topics
 from .sent_ele_func import get_ele_features
 
 __author__ = 'Tanjin He'
@@ -12,11 +10,6 @@ __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 # Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
-
-# vb multi IN
-key_words_list = ['r_prepared', 'r_used', 'l_using', 'r_synthesized', 'l_prepared from', 'l_prepared by', 'l_sintered in', 'l_calcined in', 'r_added', 'r_weighed', 'r_mixed', 'l_prepared', 'r_dissolved', 'l_synthesized from', 'l_synthesized by', 'l_weighed', 'l_dissolved in', 'l_mixed in', 'l_heated in', 'l_milled']
-key_words_dict = {w: i for (i, w) in enumerate(key_words_list)}
-topic_dimension = 15
 
 def load_sentences(path, lower, zeros):
     """
@@ -122,7 +115,6 @@ def tag_mapping(sentences):
     tags = [[word[-1] for word in s] for s in sentences]
     dico = create_dico(tags)
     tag_to_id, id_to_tag = create_mapping(dico)
-    print(dico)
     print("Found %i unique named entity tags" % len(dico))
     return dico, tag_to_id, id_to_tag
 
@@ -148,8 +140,9 @@ def cap_feature(s):
         return 3
 
 
-def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_word=False, \
-                        use_topic=False, use_CHO=False, use_eleNum=False, input_tokens=[], original_para_text=''):
+def prepare_sentence(str_words, word_to_id, char_to_id, lower=False,
+                        use_CHO=False, use_eleNum=False, input_tokens=[],
+                        original_para_text=''):
     """
     Prepare a sentence for evaluation.
 
@@ -173,28 +166,11 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
              for w in str_words]
     caps = [cap_feature(w) for w in str_words]
 
-    # modified appended
-    topics = [[0]*topic_dimension for w in str_words]
-    if use_topic:
-        # get topics
-        topics = get_topics(str_words)
-    topics = np.array(topics, np.float32)
-
     ele_nums = [[0] for w in str_words]
     has_CHOs = [[0] for w in str_words]
     if use_CHO or use_eleNum:
         # get ele_num
         ele_nums, has_CHOs = get_ele_features(input_tokens, original_para_text)
-
-    # modified appended
-    key_words = [[0]*len(key_words_list) for w in str_words]
-    if use_key_word:
-        # get dependent words
-        depWords = get_key_words(str_words)
-        for i in range(len(str_words)):
-            for tmp_key_word in depWords[i]:
-                if tmp_key_word in key_words_dict:
-                    key_words[i][key_words_dict[tmp_key_word]] = 1 
 
     return {
         'str_words': str_words,
@@ -203,8 +179,6 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False, use_key_wor
         'caps': caps,
         'ele_nums': ele_nums,
         'has_CHOs': has_CHOs,
-        'topics': topics,
-        'key_words': key_words,
     }
 
 

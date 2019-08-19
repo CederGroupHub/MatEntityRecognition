@@ -42,7 +42,7 @@ def parse_material(material_text, para_text):
     # goal
     parsed_material = {'dopants': None, 'composition': None}
     #     get dopants
-    dopants, new_material = mp.get_dopants(material_text)
+    dopants, new_material = mp.get_additives(material_text)
 
     #     get abbreviation
     tmp_abbr = mp.build_abbreviations_dict([new_material], [para_text])
@@ -55,44 +55,38 @@ def parse_material(material_text, para_text):
     if len(dopants) > 0:
         parsed_material['dopants'] = dopants
     try:
-        # material parser version 3
         list_of_materials = mp.reconstruct_list_of_materials(new_material2)
         list_of_materials = list_of_materials if list_of_materials != [] else [(new_material2, '')]
         tmp_structure = []
         for m, val in list_of_materials:
             tmp_structure.append(mp.parse_material(m))
         tmp_comp = merge_struct_comp(tmp_structure)
-        # material parser version 2
-        # tmp_structure = mp.get_chemical_structure(new_material2)
-
-        # print('--------------')
-        # print(material_text)
         if tmp_comp != None and len(tmp_comp) > 0:
             parsed_material['composition'] = tmp_comp
-            # print('resolved')
-            # print(tmp_structure['composition'])
-            # print(tmp_structure)
         else:
             # print('unresolved')
             pass
     except:
-        # print('unresolved')
+        print('unresolved')
         pass
     return parsed_material
 
 
-# used to merge structure compositions from material parser v3
-# struct_list is [{'composition': {'material': {'composition': composition_dict}}}]
+# used to merge structure compositions from material parser
 def merge_struct_comp(struct_list):
     # goal
     combined_comp = {}
     all_comps = []
     for tmp_struct in struct_list:
-        for k, v in tmp_struct['composition'].items():
-            all_comps.append(v['composition'])
-        # # add H2O
-        # if tmp_struct['hydrate']:
-        #     all_comps.append({'H': 2*tmp_struct['hydrate'], 'O': tmp_struct['hydrate']})
+        for t in tmp_struct['composition']:
+            if t.get('amount', 1) != 1:
+                tmp_comp = {}
+                for ele in t['elements']:
+                    tmp_comp[ele] = '(' + t['elements'][ele] + ')*(' + t['amount'] + ')'
+                all_comps.append(tmp_comp)
+            else:
+                all_comps.append(t['elements'])
+
     for tmp_comp in all_comps:
         for k, v in tmp_comp.items():
             if k not in combined_comp:
@@ -100,7 +94,6 @@ def merge_struct_comp(struct_list):
             else:
                 combined_comp[k] += (' + ' + v)
     return combined_comp
-
 
 def count_metal_ele(material_text, para_text):
     metal_ele_num = 0
@@ -145,4 +138,4 @@ def get_ele_features(input_tokens, original_para_text):
 
 if __name__ == '__main__':
     print(get_ele_feature('ethanol', 'LiMnO2 (LMO) is synthesized from Li2CO3, Fe2O3, and H3PO4.'))
-
+    print(get_ele_feature('Li2CO3', 'LiMnO2 (LMO) is synthesized from Li2CO3, Fe2O3, and H3PO4.'))

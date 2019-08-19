@@ -49,7 +49,6 @@ class Model(object):
         self.id_to_tag = mappings['id_to_tag']
 
         self.components = {}
-        self.tmp_print = {}
 
     def save_mappings(self, id_to_word, id_to_char, id_to_tag):
         """
@@ -98,7 +97,6 @@ class Model(object):
         Load components values from disk.
         """
         for name, param in list(self.components.items()):
-            print('reloading ', name, param)
             param_path = os.path.join(self.model_path, "%s.mat" % name)
             param_values = scipy.io.loadmat(param_path)
             if hasattr(param, 'params'):
@@ -106,12 +104,6 @@ class Model(object):
                     set_values(p.name, p, param_values[p.name])
             else:
                 set_values(name, param, param_values[name])
-
-        tmp_weights = self.tmp_print['word_layer'].embeddings.get_value()
-        print('self.id_to_word[0]', self.id_to_word[0])
-        print('tmp_weights[0]', tmp_weights[0])
-        print('self.id_to_word[1]', self.id_to_word[1])
-        print('tmp_weights[1]', tmp_weights[1])
 
     def build(self,
               dropout,
@@ -407,13 +399,6 @@ class Model(object):
         if word_bidirect:
             self.add_component(tanh_layer)
             params.extend(tanh_layer.params)
-        print('word_dim and (not pre_emb)', word_ids, pre_emb, word_dim and (not pre_emb))
-        print('self.components', self.components)
-        tmp_weights = word_layer.embeddings.get_value()
-        print('self.id_to_word[0]', self.id_to_word[0])
-        print('tmp_weights[0] as init', tmp_weights[0])
-        self.tmp_print['word_layer'] = word_layer
-
 
         # Prepare train and eval inputs
         eval_inputs = []
