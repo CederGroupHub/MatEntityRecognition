@@ -141,6 +141,7 @@ def cap_feature(s):
 
 
 def prepare_sentence(str_words, word_to_id, char_to_id, lower=False,
+                        use_key_word=False, use_topic=False,
                         use_CHO=False, use_eleNum=False, input_tokens=[],
                         original_para_text=''):
     """
