@@ -1,3 +1,0 @@
-allMats_name.json filter=lfs diff=lfs merge=lfs -text
-entry_dict.json filter=lfs diff=lfs merge=lfs -text
-test_paras.json filter=lfs diff=lfs merge=lfs -text

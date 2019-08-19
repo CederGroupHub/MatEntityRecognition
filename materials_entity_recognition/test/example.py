@@ -1,5 +1,5 @@
 import json
-import random
+from pprint import pprint
 
 from materials_entity_recognition import MatRecognition
 from materials_entity_recognition import MatIdentification
@@ -7,10 +7,6 @@ from materials_entity_recognition import MatIdentification
 __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He'
 __email__ = 'tanjin_he@berkeley.edu'
-
-# random.seed(datetime.now())
-random.seed(7)
-
 
 if __name__ == "__main__":
 	# load data
@@ -24,8 +20,8 @@ if __name__ == "__main__":
 
 	# find targets/precursors
 	model_new = MatRecognition()
-	# # if enabling dependency parsing as feature
-	# model_new = MatRecognition(parse_dependency=True)
 	for tmp_para in paras:
 		all_materials, precursors, targets, other_materials = model_new.mat_recognize(tmp_para)
+
+
 

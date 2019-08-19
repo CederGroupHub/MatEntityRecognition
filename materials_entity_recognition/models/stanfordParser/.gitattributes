@@ -1,3 +1,0 @@
-stanford-parser-3.8.0-models.jar filter=lfs diff=lfs merge=lfs -text
-stanford-parser.jar filter=lfs diff=lfs merge=lfs -text
-englishPCFG.ser.gz filter=lfs diff=lfs merge=lfs -text
