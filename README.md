@@ -15,7 +15,7 @@ Install:
 	    "Can't find model 'en'..." 
 	It is because the spacy data is not downloaded. Please use
 	    python -m spacy download en
-	MaterialParser is used. Please download from the CederGroup repo.
+	MaterialParser is used. Please download it from https://github.com/CederGroupHub/MaterialParser.
 
 Use:
 
