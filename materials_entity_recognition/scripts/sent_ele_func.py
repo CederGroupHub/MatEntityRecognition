@@ -45,7 +45,7 @@ def parse_material(material_text, para_text):
     dopants, new_material = mp.separate_additives(material_text)
 
     #     get abbreviation
-    tmp_abbr = mp.build_abbreviations_dict([new_material], [para_text])
+    tmp_abbr = mp.build_acronyms_dict([new_material], [para_text])
     new_material2 = []
     if new_material in tmp_abbr:
         new_material2 = tmp_abbr[new_material]
@@ -55,8 +55,8 @@ def parse_material(material_text, para_text):
     if len(dopants) > 0:
         parsed_material['dopants'] = dopants
     try:
-        # material parser version 6.0.0
-        list_of_materials = mp.reconstruct_list_of_materials(new_material2)
+        # material parser version 6.0.3
+        list_of_materials = mp.split_materials_list(new_material2)
         list_of_materials = list_of_materials if list_of_materials != [] else [(new_material2, '')]
         tmp_structure = []
         for m, val in list_of_materials:
@@ -67,8 +67,8 @@ def parse_material(material_text, para_text):
         else:
             # print('unresolved')
             pass
-    except:
-        # print('unresolved')
+    except Exception as e:
+        print('Error!', e)
         pass
     return parsed_material
 
