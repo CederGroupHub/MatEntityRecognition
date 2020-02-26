@@ -13,17 +13,15 @@ if __name__ == "__main__":
 	with open('../data/test_paras.json', 'r') as fr:
 		paras = json.load(fr)
 
-	# # find materials
-	# model_new = MatIdentification()
+	# find materials
+	model_new = MatIdentification()
+	for tmp_para in paras[-1:]:
+		result = model_new.mat_identify(tmp_para)
+		pprint(result)
+
+	# # find targets/precursors
+	# model_new = MatRecognition()
 	# for tmp_para in paras:
-	# 	all_materials = model_new.mat_identify(tmp_para)
-
-	# find targets/precursors
-	model_new = MatRecognition()
-	for tmp_para in paras:
-		all_materials, precursors, targets, other_materials = model_new.mat_recognize(tmp_para)
-	print('all_materials', all_materials)
-	print('precursors', precursors)
-	print('targets', targets)
-	print('other_materials', other_materials)	
-
+	# 	result = model_new.mat_recognize(tmp_para)
+	# 	pprint(result)
+	
