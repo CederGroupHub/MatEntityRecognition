@@ -461,7 +461,7 @@ class MatRecognition():
                             elif tag_started:
                                 NER_label = 'I-Mat'
                     if NER_label == 'O':
-                        input_SL_sent.append(tmp_token)
+                        input_SL_sent.append(tmp_token.copy())
                     elif NER_label == 'B-Mat':
                         input_SL_sent.append({
                             'text': '<MAT>', 
@@ -525,7 +525,7 @@ class MatRecognition():
                             elif tag_started:
                                 NER_label = 'I-Mat'
                     if NER_label == 'O':
-                        input_SL_sent.append(tmp_token)
+                        input_SL_sent.append(tmp_token.copy())
                     elif NER_label == 'B-Mat':
                         input_SL_sent.append({
                             'text': '<MAT>', 
