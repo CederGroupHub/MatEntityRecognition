@@ -1,0 +1,5 @@
+tensorflow
+tensorflow-addons
+Materials_Parser
+transformers
+torch
