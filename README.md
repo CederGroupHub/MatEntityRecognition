@@ -1,4 +1,4 @@
-# Materials Entity Recognition (MER)
+# Synthesis Materials Recognizer (SMR) for Materials Entity Recognition (MER)
 
 Extract materials from a paragraph, and recognize the tartes and precursors in those materials  
 
@@ -20,10 +20,10 @@ Use:
 
 	from materials_entity_recognition import MatRecognition   
 	model = MatRecognition()  
-	all_materials, precursors, targets, other_materials = model.mat_recognize(input_para_text)  
+	result = model.mat_recognize(input_paras)  
 
 Parameters:
 
-	Input: plain text of a paragraph  
-	Output: 4 list objects, which are all materials, precursors, targets, other materials, respectively.  
-
+	Input: list of plain text of paragraphs or plian text of a paragraph. 
+	Note: input a list of paragraphs (recommended) is much faster than inputting them one by one in a loop!  
+	Output: a list of (list of) dict objects, containing all materials, precursors, targets, and other materials for each sentence in the input paragraphs.  
