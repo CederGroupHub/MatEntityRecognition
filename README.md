@@ -4,10 +4,9 @@ Extract materials from a paragraph, and recognize the targets and precursors in 
 
 Install:  
 
-	Then
-		git clone git@github.com:CederGroupHub/MatEntityRecognition.git 
-		cd MatEntityRecognition
-		pip install -e .
+    git clone git@github.com:CederGroupHub/MatEntityRecognition.git 
+    cd MatEntityRecognition
+    pip install -e .
 	
 	Spacy is used. If there is an error saying: 
 	    "Can't find model 'en'..." 
