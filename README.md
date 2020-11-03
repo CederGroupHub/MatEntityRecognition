@@ -1,4 +1,4 @@
-# Materials Entity Recognition (MER)
+# Synthesis Materials Recognizer (SMR) for Materials Entity Recognition (MER)
 
 Extract materials from a paragraph, and recognize the tartes and precursors in those materials  
 
