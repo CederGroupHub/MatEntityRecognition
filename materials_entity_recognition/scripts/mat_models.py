@@ -600,7 +600,6 @@ class MatRecognition():
         if model_path is None:
             file_path = os.path.dirname(__file__)
             model_path = os.path.join(file_path, '..', 'models/matRecognition')
-            print('model_path', os.path.exists(model_path))
         self.model = NERModel.reload_model(model_path=model_path, bert_path=bert_path)
         self.bert_path = bert_path
         if self.bert_path:
