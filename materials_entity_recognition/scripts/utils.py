@@ -75,7 +75,7 @@ def found_package(package_name):
     return found
 
 def use_file_as_stdout(file_path):
-    if not os.path.exists(file_path):
+    if not os.path.exists(os.path.dirname(file_path)):
         os.makedirs(os.path.dirname(file_path))
     sys.stdout = open(file_path, 'w')
     sys.stdout = Unbuffered(sys.stdout)
