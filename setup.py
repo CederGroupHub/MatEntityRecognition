@@ -13,7 +13,7 @@ if __name__ == "__main__":
           packages=find_packages(),
           include_package_data=True,
           install_requires=[
-              'tensorflow-gpu>=2.1',
+              'tensorflow>=2.1',
               'tensorflow-addons>=0.8',
               'spacy',
               'chemdataextractor',

@@ -205,6 +205,11 @@ class NERModel(keras.Model):
                 learning_rate=lr_method_parameters.get('lr', 0.005),
             )
 
+        # TODO: to be removed after Huggingface is updated.
+        #  This is added due to some incompatibility between keras and huggingface.
+        #  See: https://github.com/huggingface/transformers/issues/6560
+        self.optimizer._HAS_AGGREGATE_GRAD = False
+
         self.loss = PlainLoss(name='loss_layer')
 
         self.create_constants()
