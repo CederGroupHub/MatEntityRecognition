@@ -55,24 +55,12 @@ def get_brc_submit_head(partition='GPU'):
 #SBATCH --gres=gpu:4
 #
 '''
-    if partition == 'CPU':
-        brc_submit_head += '''# Wall clock limit:
+    brc_submit_head += '''# Wall clock limit:
 #SBATCH --time=48:00:00
 #
 ## Command(s) to run (example):
 
 source activate py36_tf
-echo begin >> log.txt
-date >> log.txt
-
-'''
-    else:
-        brc_submit_head += '''# Wall clock limit:
-#SBATCH --time=48:00:00
-#
-## Command(s) to run (example):
-
-source activate py36_tf20
 echo begin >> log.txt
 date >> log.txt
 
@@ -454,8 +442,8 @@ if __name__ == '__main__':
     # --------------input region-----------------------
     work_dir_template = '0000_hyper_structure'
     xsede_partition = 'GPU'
-    savio_partition = 'CPU'
-    lrc_partition = 'CPU'
+    savio_partition = 'GPU'
+    lrc_partition = 'GPU'
 
     # to submit different spliting
     # TP data:
@@ -471,23 +459,51 @@ if __name__ == '__main__':
 
     to_add_data_args = True
     all_name_prefix = [
-        'TP_750_83_173_232_321_5',
-        'TP_750_83_173_232_345_321_5',
-        'TP_750_83_173_232_345_321_438_5',
+        # 'MAT_750_83_173_232_345_321_438_5',
+        'MATTP_750_83_173_232_345_321_438_5',
+        # 'TP_750_83_173_232_345_321_438_5',
     ]
 
     hyper_paras_essential = [
+        '--std_out generated/output.txt '
+        '--bert_path ../../data_public/bert/cased_L-12_H-768_A-12 --bert_first_trainable_layer 6 '
+        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
+        '--tag_scheme iob '
+        '--num_epochs 25 --batch_size 16 '
+        '--classifier_type lstm --crf True '
+        '--dropout 0.5 '
+        '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
+        '--loss_per_token True ',
 
         '--std_out generated/output.txt '
-        '--device cpu  '
-        '--emb_path ../../data_public/embedding/embedding_sg_win5_size100_iter50_noLemma.text '
-        '--clean_tag True ',
+        '--bert_path ../../data_public/bert/cased_L-12_H-768_A-12 --bert_first_trainable_layer 0 '
+        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
+        '--tag_scheme iob '
+        '--num_epochs 4 --batch_size 16 '
+        '--classifier_type simple --crf False '
+        '--dropout 0.1 '
+        '--lr_method adam@lr=5e-05 '
+        '--loss_per_token False ',
 
         '--std_out generated/output.txt '
-        '--device cpu  '
-        '--emb_path ../../data_public/embedding/embedding_MAT_sg_win5_size100_iter50_noLemma.text '
-        '--clean_tag True ',
+        '--bert_path ../../data_public/bert/cased_L-12_H-768_A-12 --bert_first_trainable_layer 0 '
+        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
+        '--tag_scheme iob '
+        '--num_epochs 4 --batch_size 16 '
+        '--classifier_type simple --crf False '
+        '--dropout 0.1 '
+        '--lr_method adam@lr=3e-05 '
+        '--loss_per_token False ',
 
+        '--std_out generated/output.txt '
+        '--bert_path ../../data_public/bert/cased_L-12_H-768_A-12 --bert_first_trainable_layer 0 '
+        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
+        '--tag_scheme iob '
+        '--num_epochs 4 --batch_size 16 '
+        '--classifier_type simple --crf False '
+        '--dropout 0.1 '
+        '--lr_method adam@lr=2e-05 '
+        '--loss_per_token False ',
     ]
 
     # obtain final_hyper_paras
@@ -509,8 +525,8 @@ if __name__ == '__main__':
         # 8  4:59:29.079169 5/8
         # 12 5:59:51.086202 6/12
         # 24 10:20:54.829366
-        capability_per_work_dir = 12
-        task_per_work_dir = 12
+        capability_per_work_dir = 4
+        task_per_work_dir = 4
         if to_add_data_args:
             hyper_paras = add_data_args(
                 hyper_paras=hyper_paras_essential,
