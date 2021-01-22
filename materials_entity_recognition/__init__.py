@@ -8,4 +8,4 @@ from .scripts import MatTPIdentificationBagging
 __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He'
 __email__ = 'tanjin_he@berkeley.edu'
-__version__ = 'v2.1'
+__version__ = 'v3.0'
