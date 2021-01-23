@@ -3,7 +3,7 @@ import json
 import random
 import time
 from pprint import pprint
-
+import warnings
 import numpy as np
 import spacy
 import re
@@ -513,6 +513,15 @@ def prepare_datadict_bert(
             tokenizer=bert_tokenizer, pre_tokens=sent
         )
         bert_tokens = bert_input['tokens']
+
+        if len(bert_tokens) > bert_tokenizer.model_max_length:
+            warnings.warn(
+                'Warning! The sentence {} is skipped '
+                'because the number of word pieces is larger than 512!'.format(
+                    ' '.join([t['bert_text'] for t in bert_tokens])
+                )
+            )
+            continue
 
         # convert all labels (str) to tags (int)
         # TODO: unify the name from label to tag in the future

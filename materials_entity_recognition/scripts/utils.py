@@ -12,6 +12,8 @@ import importlib
 from pprint import pprint
 from typing import List, Dict
 
+from tokenizers import tokenizers
+
 __author__ = 'Tanjin He'
 __maintainer__ = 'Tanjin He, Ziqin (Shaun) Rong'
 __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
@@ -306,7 +308,7 @@ def offset_tokens(tokens, offset):
     return reformated_tokens
 
 
-def reformat_bert_tokens(bert_tokens, text: str):
+def reformat_bert_tokens(bert_tokens: tokenizers.Encoding, text: str):
     """
     reformat bert tokens to list of dicts
 
@@ -366,9 +368,9 @@ def fix_missed_bert_tokens(
 
 
 def get_bert_tokens_in_span(
-        a_span: Dict,
-        bert_pieces: List,
-        unk_token: str = '[UNK]'
+    a_span: Dict,
+    bert_pieces: tokenizers.Encoding,
+    unk_token: str = '[UNK]'
 ):
     """
     Tokenize a span with bert tokenization results.
@@ -474,6 +476,7 @@ def get_entities(sent_tokens):
     """
     entities = []
     # collect entities with labels other than 'O'
+    ner_tag = 'O'
     for token in sent_tokens:
         if token['label'] != 'O':
             tag = token['label'][2:].strip()
