@@ -231,7 +231,7 @@ def prepare_embedding_matrix(id_to_word, word_dim, emb_path):
         else:
             emb_invalid += 1
     if emb_invalid > 0:
-        print('WARNING: %i invalid lines in embeddings file' % emb_invalid)
+        warnings.warn('WARNING: %i invalid lines in embeddings file' % emb_invalid)
     assert emb_invalid < 1
 
     # Lookup embedding dict
@@ -512,16 +512,18 @@ def prepare_datadict_bert(
         bert_input = get_bert_input(
             tokenizer=bert_tokenizer, pre_tokens=sent
         )
-        bert_tokens = bert_input['tokens']
-
-        if len(bert_tokens) > bert_tokenizer.model_max_length:
+        if len(bert_input['tokens']) > bert_tokenizer.model_max_length:
             warnings.warn(
                 'Warning! The sentence {} is skipped '
                 'because the number of word pieces is larger than 512!'.format(
-                    ' '.join([t['bert_text'] for t in bert_tokens])
+                    ' '.join([t['bert_text'] for t in bert_input['tokens']])
                 )
             )
-            continue
+            bert_input = get_bert_input(
+                tokenizer=bert_tokenizer,
+                pre_tokens=[{'text': 'None', 'start': 0, 'end': 4}],
+            )
+        bert_tokens = bert_input['tokens']
 
         # convert all labels (str) to tags (int)
         # TODO: unify the name from label to tag in the future

@@ -207,7 +207,7 @@ class MatIdentification(object):
                         'paragraph_index': i,
                         'sentence_index': 0,
                         'sentence': para,
-                        'tokens': [{'text': 'None', 'start': 0, 'end': 0}],
+                        'tokens': [{'text': 'None', 'start': 0, 'end': 4}],
                     })
         else:
             for i in range(len(all_input_paras)):
@@ -487,7 +487,7 @@ class MatTPIdentification(object):
                         'paragraph_index': i,
                         'sentence_index': 0,
                         'sentence': para,
-                        'tokens': [{'text': 'None', 'start': 0, 'end': 0}],
+                        'tokens': [{'text': 'None', 'start': 0, 'end': 4}],
                     })
         else:
             for i in range(len(all_input_paras)):
@@ -835,13 +835,13 @@ class MatRecognition():
                         'paragraph_index': i,
                         'sentence_index': 0,
                         'sentence': para,
-                        'tokens': [{'text': 'None', 'start': 0, 'end': 0}],
+                        'tokens': [{'text': 'None', 'start': 0, 'end': 4}],
                     })
                     all_SL_sents.append({
                         'paragraph_index': i,
                         'sentence_index': 0,
                         'sentence': para,
-                        'tokens': [{'text': 'None', 'start': 0, 'end': 0}],
+                        'tokens': [{'text': 'None', 'start': 0, 'end': 4}],
                     })
         else:
             for i in range(len(all_input_paras)):
