@@ -281,6 +281,11 @@ args_0 = parse_argument()
 if args_0.device == 'cpu':
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+#########################################
+# use single gpu in training if gpus exist
+#########################################
+os.environ["tf_use_single_gpu"] = "True"
+
 
 import datetime
 import shutil

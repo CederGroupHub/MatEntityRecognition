@@ -27,7 +27,9 @@ def print_gpu_info():
     logical_gpus = tf.config.experimental.list_logical_devices('GPU')
     print('print_gpu_info: ', len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
 
-def allow_gpu_growth():
+def allow_gpu_growth(use_single_gpu=False):
+    if isinstance(use_single_gpu, str):
+        use_single_gpu = (use_single_gpu.lower() == 'true')
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
         num_python_proc = 0
@@ -42,9 +44,13 @@ def allow_gpu_growth():
         try:
             # Currently, memory growth needs to be the same across GPUs
             # use gpu
-            gpu_to_use = gpus[num_python_proc % len(gpus)]
-            tf.config.experimental.set_visible_devices(gpu_to_use, 'GPU')
-            tf.config.experimental.set_memory_growth(gpu_to_use, True)
+            if use_single_gpu:
+                gpus_to_use = [gpus[num_python_proc % len(gpus)]]
+            else:
+                gpus_to_use = gpus
+            tf.config.experimental.set_visible_devices(gpus_to_use, 'GPU')
+            for gpu in gpus_to_use:
+                tf.config.experimental.set_memory_growth(gpu, True)
             # # use cpu
             # tf.config.experimental.set_visible_devices([], 'GPU')
             # for gpu in gpus:
@@ -56,7 +62,9 @@ def allow_gpu_growth():
             print(e)
 
 if os.environ.get('tf_allow_gpu_growth', 'False') != 'True':
-    allow_gpu_growth()
+    allow_gpu_growth(
+        use_single_gpu=os.environ.get('tf_use_single_gpu', 'False')
+    )
     os.environ['tf_allow_gpu_growth'] = 'True'
 
 class Unbuffered(object):
