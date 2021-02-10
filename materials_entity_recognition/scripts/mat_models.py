@@ -21,7 +21,11 @@ class MatIdentification(object):
     Use LSTM for materials identification
     """
 
-    def __init__(self, model_path=None, bert_path='default', pubchem_path=None):
+    def __init__(self,
+                 model_path=None,
+                 bert_path='default',
+                 prefetch_size=10,
+                 pubchem_path=None):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
@@ -71,6 +75,8 @@ class MatIdentification(object):
             self.pubchem_path = pubchem_path
         self.mat_dico = None
 
+        self.prefetch_size = prefetch_size
+
     def mat_identify_sent(self, input_sent):
         """
         Identify materials in a sentence, which is a list of tokens.
@@ -103,6 +109,8 @@ class MatIdentification(object):
             use_ori_text_char=self.model.use_ori_text_char,
             bert_tokenizer=self.bert_tokenizer,
         )
+        if self.prefetch_size > 0:
+            data_X.prefetch(self.prefetch_size)
         # Prediction
         all_y_preds = self.model.predict_label(x_batches=data_X)
 
@@ -329,7 +337,10 @@ class MatTPIdentification(object):
     Use LSTM for materials/target/precursor identification in one step
     """
 
-    def __init__(self, model_path=None, bert_path=None):
+    def __init__(self,
+                 model_path=None,
+                 bert_path=None,
+                 prefetch_size=10):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
@@ -369,6 +380,8 @@ class MatTPIdentification(object):
         else:
             self.tag_to_id = None
 
+        self.prefetch_size = prefetch_size
+
     def matTP_identify_sent(self, input_sent):
         """
         Identify materials in a sentence, which is a list of tokens.
@@ -404,6 +417,8 @@ class MatTPIdentification(object):
             use_ori_text_char=self.model.use_ori_text_char,
             bert_tokenizer=self.bert_tokenizer,
         )
+        if self.prefetch_size > 0:
+            data_X.prefetch(self.prefetch_size)
         # Prediction
         all_y_preds = self.model.predict_label(x_batches=data_X)
 
@@ -600,8 +615,9 @@ class MatRecognition():
     def __init__(self,
                  model_path=None,
                  mat_identify_model_path=None,
-                     bert_path='default',
+                 bert_path='default',
                  mat_identify_bert_path='default',
+                 prefetch_size=10,
                  pubchem_path=None):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
@@ -649,11 +665,15 @@ class MatRecognition():
         else:
             self.tag_to_id = None
 
+        self.prefetch_size = prefetch_size
+
         self.identify_model = MatIdentification(
             model_path=mat_identify_model_path,
             pubchem_path=pubchem_path,
-            bert_path=self.mat_identify_bert_path
+            bert_path=self.mat_identify_bert_path,
+            prefetch_size=self.prefetch_size
         )
+
 
     def mat_recognize_sent(self, input_sent, ori_para_text=''):
         all_recognition_result = self.mat_recognize_sents(
@@ -693,6 +713,8 @@ class MatRecognition():
             original_para_text=ori_para_text,
             bert_tokenizer=self.bert_tokenizer,
         )
+        if self.prefetch_size > 0:
+            data_X.prefetch(self.prefetch_size)
         # Prediction
         all_y_preds = self.model.predict_label(x_batches=data_X)
         if return_scores:
@@ -1015,7 +1037,11 @@ class MatIdentificationBagging(MatIdentification):
     Use LSTM for materials identification
     """
 
-    def __init__(self, model_path=None, bert_path=None, bagging=[]):
+    def __init__(self,
+                 model_path=None,
+                 bert_path=None,
+                 bagging=[],
+                 prefetch_size=10):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
@@ -1025,14 +1051,16 @@ class MatIdentificationBagging(MatIdentification):
                 self.identify_models.append(
                     MatIdentification(
                         model_path=tmp_path,
-                        bert_path=bert_path
+                        bert_path=bert_path,
+                        prefetch_size=prefetch_size,
                     )
                 )
         else:
             self.identify_models.append(
                 MatIdentification(
                     model_path=model_path,
-                    bert_path=bert_path
+                    bert_path=bert_path,
+                    prefetch_size=prefetch_size,
                 )
             )
         # attention: models should use the same tag_scheme and same tags
@@ -1094,7 +1122,8 @@ class MatIdentificationBagging(MatIdentification):
                 use_ori_text_char=tmp_model.model.use_ori_text_char,
                 bert_tokenizer=tmp_model.bert_tokenizer,
             )
-
+            if tmp_model.prefetch_size > 0:
+                data_X.prefetch(tmp_model.prefetch_size)
             # Prediction
             y_preds = tmp_model.model.predict_label(x_batches=data_X)
             tags_scores = tmp_model.model.predict(x_batches=data_X)
@@ -1169,6 +1198,7 @@ class MatRecognitionBagging(MatRecognition):
                  mat_identify_bagging=[],
                  bert_path=None,
                  mat_identify_bert_path=None,
+                 prefetch_size=10,
                  ):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
@@ -1194,6 +1224,7 @@ class MatRecognitionBagging(MatRecognition):
                         mat_identify_model_path=self.mat_identify_model_path,
                         bert_path=bert_path,
                         mat_identify_bert_path=self.mat_identify_bert_path,
+                        prefetch_size=prefetch_size,
                     )
                 )
         else:
@@ -1203,6 +1234,7 @@ class MatRecognitionBagging(MatRecognition):
                     mat_identify_model_path=self.mat_identify_model_path,
                     bert_path=bert_path,
                     mat_identify_bert_path=self.mat_identify_bert_path,
+                    prefetch_size=prefetch_size,
                 )
             )
         # attention: models should use the same tag_scheme and same tags
@@ -1212,6 +1244,7 @@ class MatRecognitionBagging(MatRecognition):
             model_path=self.mat_identify_model_path,
             bagging=mat_identify_bagging,
             bert_path=self.mat_identify_bert_path,
+            prefetch_size=prefetch_size,
         )
 
     def get_standard_tags(self):
@@ -1278,6 +1311,8 @@ class MatRecognitionBagging(MatRecognition):
                 original_para_text=ori_para_text,
                 bert_tokenizer=tmp_model.bert_tokenizer,
             )
+            if tmp_model.prefetch_size > 0:
+                data_X.prefetch(tmp_model.prefetch_size)
             # Prediction
             y_preds = tmp_model.model.predict_label(x_batches=data_X)
             tags_scores = tmp_model.model.predict(x_batches=data_X)
@@ -1340,7 +1375,12 @@ class MatTPIdentificationBagging(MatTPIdentification):
     Use LSTM for materials identification
     """
 
-    def __init__(self, model_path=None, bert_path=None, bagging=[]):
+    def __init__(self,
+                 model_path=None,
+                 bert_path=None,
+                 bagging=[],
+                 prefetch_size=10,
+                 ):
         """
         :param model_path: path to the model for materials recognition. If None input, default initialize.
         """
@@ -1351,6 +1391,7 @@ class MatTPIdentificationBagging(MatTPIdentification):
                     MatTPIdentification(
                         model_path=tmp_path,
                         bert_path=bert_path,
+                        prefetch_size=prefetch_size,
                     )
                 )
         else:
@@ -1358,6 +1399,7 @@ class MatTPIdentificationBagging(MatTPIdentification):
                 MatTPIdentification(
                     model_path=model_path,
                     bert_path=bert_path,
+                    prefetch_size=prefetch_size,
                 )
             )
         # attention: models should use the same tag_scheme and same tags
@@ -1423,7 +1465,8 @@ class MatTPIdentificationBagging(MatTPIdentification):
                 use_ori_text_char=tmp_model.model.use_ori_text_char,
                 bert_tokenizer=tmp_model.bert_tokenizer,
             )
-
+            if tmp_model.prefetch_size > 0:
+                data_X.prefetch(tmp_model.prefetch_size)
             # Prediction
             y_preds = tmp_model.model.predict_label(x_batches=data_X)
             tags_scores = tmp_model.model.predict(x_batches=data_X)

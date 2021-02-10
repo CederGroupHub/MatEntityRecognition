@@ -180,7 +180,7 @@ def get_argument_parser():
     argparser.add_argument(
         "--batch_size", type=int,
         help="batch_size",
-        default=1
+        default=4
     )
     argparser.add_argument(
         "--num_epochs", type=int,
@@ -190,7 +190,7 @@ def get_argument_parser():
     argparser.add_argument(
         "--steps_per_epoch", type=int,
         help="steps_per_epoch",
-        default=3500
+        default=5000
     )
     argparser.add_argument(
         "--training_gen_mode",
@@ -203,6 +203,11 @@ def get_argument_parser():
         "--training_ratio", type=float,
         help="fraction of sentences to use in training set",
         default=1.0
+    )
+    argparser.add_argument(
+        "--prefetch_size", type=int,
+        help="size of data to prefetch by tf.dateset",
+        default=10
     )
     argparser.add_argument(
         "--path_train",
@@ -297,8 +302,7 @@ from scripts import model_framework
 
 import tensorflow as tf
 from tensorflow import keras
-if utils.found_package('transformers'):
-    import transformers
+import transformers
 
 def validate_parameters(parameters):
     """
@@ -497,7 +501,14 @@ if __name__ == '__main__':
 
     if args.training_gen_mode == 'static':
         args.steps_per_epoch = len(list(train_X))
-
+        
+    if args.prefetch_size > 0:
+        train_X.prefetch(args.prefetch_size)
+        train_Y.prefetch(args.prefetch_size)
+        val_X.prefetch(args.prefetch_size)
+        val_Y.prefetch(args.prefetch_size)
+        test_X.prefetch(args.prefetch_size)
+        test_Y.prefetch(args.prefetch_size)
 
     #########################################
     # build model

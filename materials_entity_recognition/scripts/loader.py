@@ -319,9 +319,9 @@ def dict_to_tf_dataset(data,
             yield feature_dict
 
     def feature_dict_gen_dynamic():
-        random.seed(random_seed)
+        random_generator = random.Random(random_seed)
         while (True):
-            d = random.choice(data)
+            d = random_generator.choice(data)
             feature_dict = {}
             for k, v in d.items():
                 if k not in features:
@@ -340,13 +340,13 @@ def dict_to_tf_dataset(data,
                 yield 0.0
 
     def y_array_gen_dynamic():
-        random.seed(random_seed)
+        random_generator = random.Random(random_seed)
         while True:
-            d = random.choice(data)
+            d = random_generator.choice(data)
             if column_y:
                 assert column_y in d
                 # print('generted y sample')
-                yield  preprocess_func[column_y](d[column_y])
+                yield preprocess_func[column_y](d[column_y])
             else:
                 yield 0.0
 
