@@ -18,7 +18,7 @@ if __name__ == "__main__":
               'spacy',
               'chemdataextractor',
               'numpy',
-              'transformers==4.1.1',
+              'transformers>=4.3.2',
               'torch',
               'psutil',
           ],
