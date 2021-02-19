@@ -1,0 +1,7 @@
+pymongo
+regex
+dask[complete]
+pymodm
+timebudget
+jsonlines
+DataMiningSynthesisLib (for preprocessing before MER, can be replaced with your own text preprocessing code)

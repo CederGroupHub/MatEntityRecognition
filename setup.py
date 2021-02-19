@@ -6,7 +6,7 @@ __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 if __name__ == "__main__":
     setup(name='materials_entity_recognition',
-          version=3.0,
+          version=3.1,
           author="Tanjin He",
           author_email="tanjin_he@berkeley.edu",
           license="MIT License",

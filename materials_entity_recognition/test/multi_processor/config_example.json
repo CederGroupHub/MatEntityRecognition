@@ -1,0 +1,18 @@
+{
+  "mongo_db": {
+    "host": "xx.xx.xx.xx",
+    "port": 27017,
+    "db_name": "data_to_save",
+    "username": "xx",
+    "password": "xx",
+    "auth_source": "data_to_save"
+  },
+  "mongo_db_fetch": {
+    "host": "xx.xx.xx.xx",
+    "port": 27017,
+    "db_name": "data_to_fetch",
+    "username": "xx",
+    "password": "xx",
+    "auth_source": "data_to_fetch"
+  }
+}
