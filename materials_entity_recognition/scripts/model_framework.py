@@ -105,11 +105,11 @@ class NERModel(keras.Model):
             self.parameters_path = os.path.join(self.model_path, 'parameters.pkl')
 
         self.last_cp_dir = os.path.join(self.model_path, 'last_cp')
-        if not os.path.exists(self.last_cp_dir):
+        if not (to_reload_model or os.path.exists(self.last_cp_dir)):
             os.makedirs(self.last_cp_dir)
         self.last_cp_path = os.path.join(self.last_cp_dir, 'cp.ckpt')
         self.opt_cp_dir = os.path.join(self.model_path, 'opt_cp')
-        if not os.path.exists(self.opt_cp_dir):
+        if not (to_reload_model or os.path.exists(self.opt_cp_dir)):
             os.makedirs(self.opt_cp_dir)
         self.opt_cp_path = os.path.join(self.opt_cp_dir, 'cp.ckpt')
 
