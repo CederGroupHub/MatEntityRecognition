@@ -19,7 +19,6 @@ if __name__ == "__main__":
               'chemdataextractor',
               'numpy',
               'transformers==4.2.2',
-              'torch',
               'psutil',
           ],
           zip_safe=False)
