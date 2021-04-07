@@ -13,13 +13,12 @@ if __name__ == "__main__":
           packages=find_packages(),
           include_package_data=True,
           install_requires=[
-              'tensorflow>=2.3.0',
+              'tensorflow==2.3.0',
               'tensorflow-addons>=0.12.0',
               'spacy',
               'chemdataextractor',
               'numpy',
-              'transformers>=4.3.2',
-              'torch',
+              'transformers==4.2.2',
               'psutil',
           ],
           zip_safe=False)

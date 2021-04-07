@@ -7,8 +7,9 @@ __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 # constant
 if found_package('material_parser'):
-    from material_parser.material_parser import MaterialParser
+    from material_parser.material_parser_old import MaterialParser
     mp = MaterialParser(pubchem_lookup=False)
+    print ("Using Material Parser (old version).")
 allNonMetalElements = set(['C', 'H', 'O', 'N', 'Cl', 'F', 'P', 'S', 'Br', 'I', 'Se'] + ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn'])
 # element table by symbol of elements
 elementTable = {

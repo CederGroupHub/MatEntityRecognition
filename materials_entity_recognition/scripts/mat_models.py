@@ -419,6 +419,7 @@ class MatTPIdentification(object):
         )
         if self.prefetch_size > 0:
             data_X.prefetch(self.prefetch_size)
+
         # Prediction
         all_y_preds = self.model.predict_label(x_batches=data_X)
 
