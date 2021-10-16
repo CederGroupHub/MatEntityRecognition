@@ -25,7 +25,6 @@ __email__ = 'tanjin_he@berkeley.edu, rongzq08@gmail.com'
 
 # Modified based on the NER Tagger code from arXiv:1603.01360 [cs.CL]
 
-nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 def load_sentences(path, lower, zeros):
     """
@@ -214,6 +213,9 @@ def prepare_embedding_matrix(id_to_word, word_dim, emb_path):
     :return embedding_matrix: a embedding matrix (numpy 2d array), the index of 
                               matrix is consist with the id in id_to_word
     """
+
+    nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+
     n_words = len(id_to_word)
     embedding_matrix = np.random.uniform(low=-1.0, high=1.0, size=(n_words, word_dim))
 
