@@ -200,11 +200,6 @@ class NERModel(keras.Model):
                 "Not implemented learning method: {}".format(lr_method_name)
             )
 
-        # TODO: to be removed after Huggingface is updated and TF>=2.4 is used.
-        #  This is added due to some incompatibility between keras and huggingface.
-        #  See: https://github.com/huggingface/transformers/issues/6560
-        self.optimizer._HAS_AGGREGATE_GRAD = False
-
         self.loss = PlainLoss(name='loss_layer')
 
         self.create_constants()

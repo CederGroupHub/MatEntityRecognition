@@ -55,12 +55,26 @@ def get_brc_submit_head(partition='GPU'):
 #SBATCH --gres=gpu:4
 #
 '''
-    brc_submit_head += '''# Wall clock limit:
-#SBATCH --time=48:00:00
+    if partition == 'CPU':
+        brc_submit_head += '''# Wall clock limit:
+#SBATCH --time=72:00:00
 #
 ## Command(s) to run (example):
 
-source activate py36_tf
+source activate py36
+echo begin >> log.txt
+date >> log.txt
+
+'''
+    else:
+        brc_submit_head += '''# Wall clock limit:
+#SBATCH --time=72:00:00
+#
+## Command(s) to run (example):
+
+module load cuda/11.2
+module load cudnn/8.1.1
+source activate py36
 echo begin >> log.txt
 date >> log.txt
 
@@ -140,7 +154,7 @@ def get_lrc_submit_head(partition='GPU'):
 '''
     if partition == 'CPU':
         submit_head += '''# Wall clock limit:
-#SBATCH --time=48:00:00
+#SBATCH --time=72:00:00
 #
 ## Command(s) to run (example):
 
@@ -527,24 +541,14 @@ if __name__ == '__main__':
 
     to_add_data_args = True
     all_name_prefix = [
-        # 'MAT_750_83_173_232_345_321_438_5',
-        # 'MATTP_750_83_173_232_345_321_438_5',
-        'TP_750_83_173_232_345_321_438_5',
+        'MAT_750_83_173_232_345_321_438_5',
+        'MATTP_750_83_173_232_345_321_438_5',
+        # 'TP_750_83_173_232_345_321_438_5',
     ]
 
     hyper_paras_essential = [
         '--std_out generated/output.txt '
-        '--bert_path ../../data_public/bert/MatBERT_20201120 --bert_first_trainable_layer 6 '
-        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
-        '--tag_scheme iob '
-        '--num_epochs 50 --batch_size 16 --prefetch_size 0 '
-        '--classifier_type lstm --crf True '
-        '--dropout 0.5 '
-        '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
-        '--loss_per_token True ',
-
-        '--std_out generated/output.txt '
-        '--bert_path ../../data_public/bert/MatBERT_20201120 --bert_first_trainable_layer 6 '
+        '--bert_path ../../data_public/bert/cased_L-12_H-768_A-12 --bert_first_trainable_layer 6 '
         '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
         '--tag_scheme iob '
         '--num_epochs 50 --batch_size 4 --prefetch_size 10 '
@@ -553,36 +557,15 @@ if __name__ == '__main__':
         '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
         '--loss_per_token True ',
 
-        '--std_out generated/output.txt '
-        '--bert_path ../../data_public/bert/MatBERT_20201120 --bert_first_trainable_layer 6 '
-        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
-        '--tag_scheme iob '
-        '--num_epochs 50 --batch_size 4 --prefetch_size 0 '
-        '--classifier_type lstm --crf True '
-        '--dropout 0.5 '
-        '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
-        '--loss_per_token True ',
-
-        '--std_out generated/output.txt '
-        '--bert_path ../../data_public/bert/MatBERT_20201120 --bert_first_trainable_layer 6 '
-        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
-        '--tag_scheme iob '
-        '--num_epochs 50 --batch_size 16 --prefetch_size 10 '
-        '--classifier_type lstm --crf True '
-        '--dropout 0.5 '
-        '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
-        '--loss_per_token True ',
-
-        '--std_out generated/output.txt '
-        '--bert_path ../../data_public/bert/MatBERT_20201120 --bert_first_trainable_layer 6 '
-        '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
-        '--tag_scheme iob '
-        '--num_epochs 50 --batch_size 4 --prefetch_size 10 '
-        '--classifier_type lstm --crf True '
-        '--dropout 0.5 '
-        '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
-        '--loss_per_token False ',
-
+        # '--std_out generated/output.txt '
+        # '--bert_path ../../data_public/bert/MatBERT_20201120 --bert_first_trainable_layer 6 '
+        # '--word_dim 0 --char_dim 0 --emb_path None --singleton_unk_probability 0.0 '
+        # '--tag_scheme iob '
+        # '--num_epochs 50 --batch_size 4 --prefetch_size 10 '
+        # '--classifier_type lstm --crf True '
+        # '--dropout 0.5 '
+        # '--lr_method adamdecay@lr=1e-05@epsilon=1e-08@warmup=0.1 '
+        # '--loss_per_token True ',
     ]
 
     # obtain final_hyper_paras
