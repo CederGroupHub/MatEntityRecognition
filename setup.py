@@ -13,7 +13,7 @@ if __name__ == "__main__":
           packages=find_packages(),
           include_package_data=True,
           install_requires=[
-              'tensorflow==2.7.0',
+              'tensorflow==2.11.1',
               'tensorflow-addons==0.17.1',
               'protobuf==3.19.6',
               'spacy',
