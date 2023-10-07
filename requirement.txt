@@ -1,6 +1,7 @@
-tensorflow>=2.4.0
-tensorflow-addons>=0.12.1
-transformers>=4.4.2
+tensorflow==2.7.0
+tensorflow-addons==0.17.1
+protobuf==3.19.6
+transformers>=4.11.3
 torch
 spacy
 chemdataextractor
