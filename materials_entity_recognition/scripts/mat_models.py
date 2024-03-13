@@ -41,7 +41,7 @@ class MatIdentification(object):
 
         self.model = NERModel.reload_model(model_path=self.model_path, bert_path=self.bert_path)
         if self.bert_path:
-            config_template = 'bert-base-cased'
+            config_template = 'google-bert/bert-base-cased'
             self.bert_tokenizer = transformers.BertTokenizerFast.from_pretrained(
                 pretrained_model_name_or_path=self.bert_path,
                 model_max_length=transformers.BertTokenizerFast.max_model_input_sizes[config_template],
@@ -356,7 +356,7 @@ class MatTPIdentification(object):
 
         self.model = NERModel.reload_model(model_path=self.model_path, bert_path=self.bert_path)
         if self.bert_path:
-            config_template = 'bert-base-cased'
+            config_template = 'google-bert/bert-base-cased'
             self.bert_tokenizer = transformers.BertTokenizerFast.from_pretrained(
                 pretrained_model_name_or_path=self.bert_path,
                 model_max_length=transformers.BertTokenizerFast.max_model_input_sizes[config_template],
@@ -641,7 +641,7 @@ class MatRecognition():
 
         self.model = NERModel.reload_model(model_path=self.model_path, bert_path=self.bert_path)
         if self.bert_path:
-            config_template = 'bert-base-cased'
+            config_template = 'google-bert/bert-base-cased'
             self.bert_tokenizer = transformers.BertTokenizerFast.from_pretrained(
                 pretrained_model_name_or_path=self.bert_path,
                 model_max_length=transformers.BertTokenizerFast.max_model_input_sizes[config_template],
@@ -1534,4 +1534,3 @@ class MatTPIdentificationBagging(MatTPIdentification):
             all_recognition_results.append(recognitionResult)
 
         return all_recognition_results
-
